@@ -1,0 +1,41 @@
+<!--
+Copyright (C) 2018 Eclipse Foundation
+
+This program and the accompanying materials are made
+available under the terms of the Eclipse Public License 2.0
+which is available at https://www.eclipse.org/legal/epl-2.0/
+
+SPDX-License-Identifier: EPL-2.0
+-->
+<div class="container">
+    <div class="notification">
+            
+        <form [formGroup]="loginForm" (ngSubmit)="login()">
+
+            <p [hidden]="!badCredentials">Bad credentials</p>
+
+            <div class="field">
+                <label class="label">Username</label>
+                <div class="control">
+                    <input formControlName="username" class="input" type="text" placeholder="Username">
+                </div>
+            </div>
+
+
+            <div class="field">
+                <label class="label">Password</label>
+                <div class="control">
+                    <input formControlName="password" class="input" type="password" placeholder="Password..">
+                </div>
+            </div>
+
+            <div class="field is-grouped">
+                <div class="control">
+                    <button type="submit" [disabled]="!loginForm.valid" class="button is-link">Submit</button>
+                </div>
+            </div>
+
+        </form>
+
+    </div>
+</div>

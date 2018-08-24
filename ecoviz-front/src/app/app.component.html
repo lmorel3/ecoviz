@@ -1,0 +1,41 @@
+<!--
+Copyright (C) 2018 Eclipse Foundation
+
+This program and the accompanying materials are made
+available under the terms of the Eclipse Public License 2.0
+which is available at https://www.eclipse.org/legal/epl-2.0/
+
+SPDX-License-Identifier: EPL-2.0
+-->
+<header>
+<h1><a [routerLink]=" ['./'] ">EcoViz</a></h1>
+    
+<nav>
+
+      <a [routerLink]=" ['./'] "
+        routerLinkActive="active" [routerLinkActiveOptions]= "{exact: true}">
+        Research projects
+      </a>
+      <a [routerLink]=" ['./members'] "
+        routerLinkActive="active" [routerLinkActiveOptions]= "{exact: true}">
+        Members
+      </a>
+      <a [routerLink]=" ['./settings'] " [hidden]="!authService.isAdmin()"
+        routerLinkActive="active" [routerLinkActiveOptions]= "{exact: true}">
+        <i class="fa fa-cog"></i>
+      </a>
+      <a (click)="logout()" [hidden]="!authService.isLogged()">
+        <i class="fa fa-sign-out"></i>
+      </a>
+
+      <a [routerLink]=" ['./login'] " [hidden]="authService.isLogged()"
+        routerLinkActive="active" [routerLinkActiveOptions]= "{exact: true}">
+        <i class="fa fa-unlock"></i>
+      </a>
+      
+    </nav>
+</header>
+
+<main>
+  <router-outlet></router-outlet>
+</main>

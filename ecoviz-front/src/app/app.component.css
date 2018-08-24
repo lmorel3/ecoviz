@@ -1,0 +1,44 @@
+/*******************************************************************************
+ * Copyright (C) 2018 Eclipse Foundation
+ * 
+ * This program and the accompanying materials are made
+ * available under the terms of the Eclipse Public License 2.0
+ * which is available at https://www.eclipse.org/legal/epl-2.0/
+ * 
+ * SPDX-License-Identifier: EPL-2.0
+ ******************************************************************************/
+html, body{
+  height: 100%;
+  font-family: Arial, Helvetica, sans-serif
+}
+
+h1, nav{
+    display: inline-flex; 
+    display: inline-flex;
+    margin: 0.2em 0 0;
+}
+
+header { display: flex !important; justify-content: space-between; }
+
+header a:active, header a:hover {
+  color: #ffffff !important;
+}
+
+h1 a { color: #ffffff !important; }
+
+#popup-content h3 {
+  padding: 0.3em 0.6em 0;
+  background: #ffba7f;
+}
+
+#popup-content p {
+  padding: 0 0.6em;
+}    
+
+.container:first-child {
+  margin-top: 3em;
+}
+
+.leaflet-right {
+  display:none;
+}

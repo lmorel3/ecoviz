@@ -1,0 +1,93 @@
+<!--
+Copyright (C) 2018 Eclipse Foundation
+
+This program and the accompanying materials are made
+available under the terms of the Eclipse Public License 2.0
+which is available at https://www.eclipse.org/legal/epl-2.0/
+
+SPDX-License-Identifier: EPL-2.0
+-->
+<div class="notification">
+    <h3 class="title is-3">Create a user</h3>
+
+    <form [formGroup]="userForm" (ngSubmit)="createUser()">
+    
+        <div class="notification is-danger" *ngIf="userForm.dirty && !userForm.valid">
+            <button class="delete"></button>
+            <span>Password confirmation must match with the password</span>
+        </div>
+    
+        <div class="notification is-success" *ngIf="userCreated">
+            <button class="delete"></button>
+            <span>User <strong>{{userForm.value.username}}</strong> has been created!</span>
+        </div>
+        
+        <div class="field">
+            <p class="control has-icons-left has-icons-right">
+                <input class="input" formControlName="username" type="email" placeholder="Username">
+                <span class="icon is-small is-left"><i class="fa fa-envelope"></i></span>
+    
+                <span class="icon is-small is-right"><i class="fa fa-check"></i></span>
+            </p>
+        </div>
+    
+        <div class="field">
+            <p class="control has-icons-left">
+                <input class="input" formControlName="password" type="password" placeholder="Password">
+                <span class="icon is-small is-left"><i class="fa fa-lock"></i></span>
+            </p>
+        </div>
+    
+        <div class="field">
+            <p class="control has-icons-left">
+                <input class="input" formControlName="passwordConfirmation" type="password" placeholder="Confirm password">
+                <span class="icon is-small is-left"><i class="fa fa-lock"></i></span>
+            </p>
+        </div>
+
+        <div class="field">
+                <label class="checkbox">
+                    <input type="checkbox" formControlName="shouldMakeAdmin"> Make admin
+                </label>
+        </div>
+        
+        <div class="field is-grouped">
+            <div class="control">
+                <button type="submit" [disabled]="!userForm.valid" class="button is-link">Create</button>
+            </div>
+        </div>
+    
+    </form>
+</div>
+
+<div class="notification">
+    <h3 class="title is-3">Users list</h3>
+    
+    <table class="table is-fullwidth">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Username</th>
+                <th>Roles</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tfoot>
+            <tr>
+                <th>#</th>
+                <th>Username</th>
+                <th>Roles</th>
+                <th>Actions</th>
+            </tr>
+        </tfoot>
+        <tbody>
+            <tr *ngFor="let user of users">
+                <td>{{ user.id }}</td>
+                <td>{{ user.username }}</td>
+                <td>{{ user.roles }}</td>
+                <td><a (click)="delete(user)"><i class="fa fa-remove"></i></a></td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>

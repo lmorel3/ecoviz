@@ -1,0 +1,23 @@
+<!--
+Copyright (C) 2018 Eclipse Foundation
+
+This program and the accompanying materials are made
+available under the terms of the Eclipse Public License 2.0
+which is available at https://www.eclipse.org/legal/epl-2.0/
+
+SPDX-License-Identifier: EPL-2.0
+-->
+<ng-select [items]="itemsLoader$ | async"
+    bindLabel="display_name"
+    [loading]="isLoading"
+    [typeahead]="input$"
+    [(ngModel)]="selected"
+    (change)="onItemChange($event)">
+</ng-select>
+
+<pre *ngIf="!!selected && !!selected.address">
+    <em>OSM_ID</em>: {{ selected.osm_id }} ({{ selected.lon }}, {{ selected.lat }}) <br/>
+    {{ selected.address.road }} <br/>
+    {{ selected.address.postcode }} {{ selected.address.city ? selected.address.city : selected.address.town }} <br/>
+    {{ selected.address.country }} [{{ selected.address.country_code.toUpperCase() }}]
+</pre>

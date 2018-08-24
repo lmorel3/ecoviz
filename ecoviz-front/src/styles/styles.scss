@@ -1,0 +1,118 @@
+/* this file will be extracted to main dist folder and is imported in index.html */
+/* This file is for setting global styles  */
+@import 'variables';
+
+html {
+    overflow: hidden;
+}
+
+body {
+    margin: 0;
+}
+
+header {
+    padding: 0.5em;
+    background: #24334a;
+}
+
+nav a {
+  color: white;
+  padding: 8px 16px;
+  vertical-align: middle;
+  text-align: center;
+  text-decoration: none;
+}
+
+nav a.active {
+  font-weight: bold;
+}
+
+footer {
+    display: flex;
+    bottom: 0;
+    padding: 0.5em;
+    background: #fff;
+    font-family: Libre Franklin,Helvetica Neue,Helvetica,Arial,sans-serif;
+    font-size: 0.9em;
+    border-top: none;
+    width: 100vw;
+    justify-content: center;
+    z-index: 1000;
+
+    a {
+        text-decoration: none;
+        color: #627894;
+    }
+    
+}
+
+.modal {
+    z-index: 99999 !important;
+}
+
+.modal-content, .modal-card {
+    overflow: unset !important;
+    margin-top: 10vh !important;
+}
+
+.marker-cluster-small {
+	background-color: rgba(181, 226, 140, 0.6);
+	}
+.marker-cluster-small div {
+	background-color: rgba(110, 204, 57, 0.6);
+	}
+
+.marker-cluster-medium {
+	background-color: rgba(241, 211, 87, 0.6);
+	}
+.marker-cluster-medium div {
+	background-color: rgba(240, 194, 12, 0.6);
+	}
+
+.marker-cluster-large {
+	background-color: rgba(253, 156, 115, 0.6);
+	}
+.marker-cluster-large div {
+	background-color: rgba(241, 128, 23, 0.6);
+	}
+
+.marker-cluster {
+	background-clip: padding-box;
+	border-radius: 20px;
+	}
+.marker-cluster div {
+	width: 30px;
+	height: 30px;
+	margin-left: 5px;
+	margin-top: 5px;
+
+	text-align: center;
+	border-radius: 15px;
+	font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+	}
+.marker-cluster span {
+	line-height: 30px;
+    }
+    
+.leaflet-sidebar {
+    top: 5vh !important;
+    height: 80vh;
+}
+
+.leaflet-sidebar-header {
+    width: 200%;
+}
+
+.highlighted {
+    font-weight: bold;
+}
+
+.button.is-link{
+    background-color: #f7941e !important;
+    border-color: #f7941e !important;
+}
+
+.button.is-link:hover, .button.is-link:active, .button.is-link:focus{
+    background-color: #b86707 !important;
+    border-color: #905105 !important;
+}

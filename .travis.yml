@@ -1,0 +1,38 @@
+matrix:
+  include:
+    - language: java
+      before_script:
+        - cd ecoviz-service
+      script:
+        - echo "Building ecoviz-service"
+
+        #- sed -i.bak -E "s/(mongodb-server-host-1:)(.*)$/\1 $MONGO_HOST/g" src/main/resources/META-INF/jnosql.yaml 
+        - mvn -B clean install
+
+      after_script:
+        - # Triggers redeployment
+        - echo "Triggering webhook"
+        - "curl -X POST \"$HOOK_URL\" -H \"X-Hook-Token:$HOOK_TOKEN\" -H \"Content-Type:application/json\" -d '{\"name\":\"ecoviz-service\"}\"'"
+
+    - language: javascript
+      before_script:
+        - cd ecoviz-front
+      script:
+        - echo "Building ecoviz-front"
+
+        - yarn install
+        - yarn run build:prod
+        
+      after_script:
+        - # Trigger redeployment 
+        - echo "Triggering ecoviz-front"
+        - "curl -X POST \"$HOOK_URL\" -H \"X-Hook-Token:$HOOK_TOKEN\" -H \"Content-Type:application/json\" -d '{\"name\":\"ecoviz-front\"}\"'"
+      
+      cache:
+        yarn: true
+        directories:
+          - node_modules
+
+notifications:
+  email:
+    - $EMAIL

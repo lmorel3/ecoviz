@@ -1,0 +1,4 @@
+/payara-micro-*.jar
+/ROOT.war
+.vscode
+/build/

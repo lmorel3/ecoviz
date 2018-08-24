@@ -1,0 +1,122 @@
+{
+  "defaultEnv": "default",
+  "environments": {
+    "default": {
+      "machines": {
+        "db": {
+          "attributes": {
+            "memoryLimitBytes": "1073741824"
+          },
+          "servers": {
+            "mongo": {
+              "attributes": {},
+              "port": "27017",
+              "protocol": "http"
+            }
+          },
+          "volumes": {},
+          "installers": [
+            "org.eclipse.che.exec",
+            "org.eclipse.che.terminal"
+          ],
+          "env": {
+            "CHE_MACHINE_NAME": "db"
+          }
+        },
+        "dev-machine": {
+          "attributes": {
+            "memoryLimitBytes": "2684354560"
+          },
+          "servers": {
+            "ecoviz-service": {
+              "attributes": {},
+              "port": "8083",
+              "protocol": "http"
+            },
+            "google-token": {
+              "attributes": {},
+              "port": "41853",
+              "protocol": "http"
+            },
+            "ecoviz-front": {
+              "attributes": {},
+              "port": "3000",
+              "protocol": "http"
+            }
+          },
+          "volumes": {},
+          "installers": [
+            "org.eclipse.che.exec",
+            "org.eclipse.che.terminal",
+            "org.eclipse.che.ws-agent",
+            "org.eclipse.che.ls.js-ts"
+          ],
+          "env": {
+            "MAVEN_OPTS": "-Xmx1024m -XX:MaxRAM=512m",
+            "CHE_MACHINE_NAME": "dev-machine",
+            "JAVA_OPTS": "-Xms128m -Xmx1024m -XX:MaxPermSize=512m"
+          }
+        }
+      },
+      "recipe": {
+        "type": "compose",
+        "content": "services:\n db:\n  image: mongo\n  mem_limit: 1073741824\n dev-machine:\n  image: eclipse/ubuntu_jdk8\n  mem_limit: 2147483648\n  depends_on:\n   - db\n",
+        "contentType": "application/x-yaml"
+      }
+    }
+  },
+  "projects": [
+    {
+      "links": [],
+      "name": "ecoviz-front",
+      "attributes": {},
+      "type": "typescript",
+      "source": {
+        "parameters": {}
+      },
+      "path": "/ecoviz/ecoviz-front",
+      "problems": [],
+      "mixins": []
+    },
+    {
+      "links": [],
+      "name": "ecoviz-service",
+      "attributes": {},
+      "type": "maven",
+      "source": {
+        "parameters": {}
+      },
+      "path": "/ecoviz/ecoviz-service",
+      "problems": [],
+      "mixins": []
+    },
+    {
+      "links": [],
+      "name": "ecoviz",
+      "attributes": {
+        "commands": [
+          "{\"commandLine\":\"cd /projects/ecoviz/ecoviz-front\\nnpm install\", \"name\":\"front-install-deps\", \"attributes\":{\"goal\":\"Build\", \"previewUrl\":\"\"}, \"type\":\"custom\"}",
+          "{\"commandLine\":\"echo Adding git aliases\\n\\ngit config --global alias.co checkout\\ngit config --global alias.br branch\\ngit config --global alias.ci commit\\ngit config --global alias.st status\\ngit config --global alias.rb rebase\\ngit config --global alias.rbi rebase -i\\n\\necho Done\", \"name\":\"add-git-aliases\", \"attributes\":{\"goal\":\"Common\", \"previewUrl\":\"\"}, \"type\":\"custom\"}",
+          "{\"commandLine\":\"echo 'partners' collection contains:\\ntouch tmp.js\\necho \\\"console.log(db.partners.find());\\\" > tmp.js\\nmongo tmp.js\\nrm -f tmp.js\", \"name\":\"mongo-show-content\", \"attributes\":{\"goal\":\"Common\", \"previewUrl\":\"\"}, \"type\":\"custom\"}",
+          "{\"commandLine\":\"cd /projects/ecoviz\\n\\n# Downnload payara-micro if needed\\nwget -nc https://repo.maven.apache.org/maven2/fish/payara/extras/payara-micro/5.182/payara-micro-5.182.jar\\n\\n# Find the latest packaged version\\nyes | cp -f ./ecoviz-service/target/extracted-payaramicro/MICRO-INF/deploy/*.war ROOT.war\\n\\n# Run Payara-Micro\\njava -Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=y -jar payara-micro-5.182.jar ROOT.war --port 8083\", \"name\":\"back-debug\", \"attributes\":{\"goal\":\"Debug\", \"previewUrl\":\"\"}, \"type\":\"custom\"}",
+          "{\"commandLine\":\"cd /projects/ecoviz/ecoviz-front\\nsed -i -E \\\"s|(apiUrl: )'(.*)',|\\\\1'${server.ecoviz-service}',|g\\\" src/environments/environment.ts\\nnpm start\\nnpm run server:dev:hmr\", \"name\":\"front-run-dev\", \"attributes\":{\"goal\":\"Run\", \"previewUrl\":\"${server.ecoviz-front}\"}, \"type\":\"custom\"}",
+          "{\"commandLine\":\"cd /projects/ecoviz/ecoviz-front\\nsed -i -E \\\"s|(apiUrl: )'(.*)',|\\\\1'${server.ecoviz-service}',|g\\\" src/environments/environment.ts\\nnpm start\\nnpm run server:dev\", \"name\":\"front-run\", \"attributes\":{\"goal\":\"Run\", \"previewUrl\":\"${server.ecoviz-front}\"}, \"type\":\"custom\"}",
+          "{\"commandLine\":\"cd /projects/ecoviz/ecoviz-service\\nrm -f /projects/ecoviz/ROOT.war\\nrm -f ./target/extracted-payaramicro/MICRO-INF/deploy/*.war\\nmvn clean install\", \"name\":\"back-build\", \"attributes\":{\"goal\":\"Build\", \"previewUrl\":\"\"}, \"type\":\"mvn\"}",
+          "{\"commandLine\":\"cd /projects/ecoviz\\n\\n## TODO: Launch PayaraMicro embedded\\n\\n# Downnload payara-micro if needed\\nwget -nc https://repo.maven.apache.org/maven2/fish/payara/extras/payara-micro/5.182/payara-micro-5.182.jar\\n\\n# Find the latest packaged version\\nyes | cp -f ./ecoviz-service/target/extracted-payaramicro/MICRO-INF/deploy/*.war ROOT.war\\n\\n# Run Payara-Micro\\njava -jar payara-micro-5.182.jar ROOT.war --port 8083\", \"name\":\"back-run\", \"attributes\":{\"goal\":\"Run\", \"previewUrl\":\"${server.ecoviz-service}/api\"}, \"type\":\"custom\"}"
+        ]
+      },
+      "type": "blank",
+      "source": {
+        "location": "git@github.com:lmorel3/ecoviz.git",
+        "type": "git",
+        "parameters": {}
+      },
+      "path": "/ecoviz",
+      "problems": [],
+      "mixins": []
+    }
+  ],
+  "name": "wksp-ecoviz",
+  "commands": [],
+  "links": []
+}

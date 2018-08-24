@@ -1,0 +1,44 @@
+.leaflet-sidebar-tabs>li.active, .leaflet-sidebar-tabs>ul>li.active {
+    color: #fff;
+    background-color: #24334a;
+}
+
+.leaflet-sidebar-header {
+    background-color: #24334a;
+    width: 200%;
+}
+
+#item-info {
+
+    & {
+        margin: 0;
+        box-shadow: 0 1px 0px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
+    }
+
+    h3 {
+        background: #f2efe8;
+        padding: 0.5em;
+        margin-bottom: 0;
+        color: #24334a;
+    }
+
+    p {
+        padding: 0.5em;
+    }
+}
+
+ng-select {
+    margin: 1em auto;
+}
+
+.member-actions {
+    position: absolute;
+    right: 25px;
+    font-size: 2em;
+    cursor: pointer;
+
+    i:not(:last-child) {
+        margin-right: 0.2em;
+    }
+
+}

@@ -1,0 +1,112 @@
+<!--
+Copyright (C) 2018 Eclipse Foundation
+
+This program and the accompanying materials are made
+available under the terms of the Eclipse Public License 2.0
+which is available at https://www.eclipse.org/legal/epl-2.0/
+
+SPDX-License-Identifier: EPL-2.0
+-->
+<div 
+    style="height:90vh"
+    leaflet 
+    [leafletOptions]="options"
+    [leafletMarkerCluster]="clusterData"
+    [leafletMarkerClusterOptions]="markerClusterOptions"
+    (leafletMarkerClusterReady)="initMap($event)"
+    (leafletClick)="onClick('click', $event)"
+    [leafletLayersControl]="layersControl"
+    [leafletLayers]="layers"
+    (leafletMapReady)="onMapReady($event)">
+</div>
+
+<div id="sidebar" class="leaflet-sidebar collapsed">
+    <!-- Nav tabs -->
+    <div class="leaflet-sidebar-tabs">
+        <ul role="tablist">
+            <li><a href="#home" role="tab" (click)="focusSearch()"><i class="fa fa-bars active"></i></a></li>
+            <li><a href="#layers" role="tab"><i class="fa fa-tag active"></i></a></li>
+        </ul>
+    </div>
+
+    <!-- Tab panes -->
+    <div class="leaflet-sidebar-content">
+
+        <div class="leaflet-sidebar-pane" id="home"> 
+            <h1 class="leaflet-sidebar-header">
+                Information
+                <span class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></span>
+            </h1>
+
+            <ng-select
+                #select
+                [items]="members"
+                bindLabel="name"
+                placeholder="Search for a member"
+                [(ngModel)]="keywords"
+                (change)="onSearch($event)">
+            </ng-select>
+            
+            <div *ngIf="!!selectedItem" id="item-info">
+
+                <h3>{{ selectedItem.name }}</h3>
+
+                <p *ngFor="let address of selectedItem.locations"> 
+                        {{ selectedItem.name }}<br>
+                        {{ address.street }}<br>
+                        {{ address.zipCode }} {{ address.cityName }}<br>
+                        {{ address.country }}
+
+                        <span class="member-actions">
+                            <i class="fa fa-tag" (click)="showTagsModal()"></i>
+                            <i class="fa fa-remove" (click)="deleteMember()"></i>
+                            <i class="fa fa-link link" *ngIf="selectedItem.type === memberType && authService.isAdmin()" (click)="showLinkModal()"></i>
+                            <i class="fa fa-unlink unlink" *ngIf="selectedItem.type === organizationAndPartnerType && authService.isAdmin()" (click)="showUnlinkPopup()"></i>
+                            <i class="fa fa-map-marker" (click)="centerMap(address)"></i>
+                        </span>
+                </p>
+
+                <span class="tags" *ngIf="selectedItem.tags.length > 0" style="margin-bottom: 0">
+                    <span class="tag" *ngFor="let tag of selectedItem.tags">{{ tag.name }}</span>
+                </span>
+        
+                <p *ngIf="selectedItem.locations.length === 0">
+                    No location data available.
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <div class="leaflet-sidebar-pane" id="layers"> 
+            <h1 class="leaflet-sidebar-header">
+                Layers
+                <span class="leaflet-sidebar-close"><i class="fa fa-caret-left"></i></span>
+            </h1>
+        
+            <div style="margin-top: 1.5em">
+                <p>Choose toggled items</p>
+                <br>
+
+                <div class="tags">
+                    <a class="tag is-medium is-white" (click)="toggle('partners')" [ngClass]="{'is-primary': isVisible('partners')}">Partners</a>
+                    <a class="tag is-medium is-white" (click)="toggle('members')" [ngClass]="{'is-primary': isVisible('members')}">Members</a>
+                </div>
+
+                <div class="buttons">
+                    <a class="button is-small" (click)="selectAllTags()">Show all</a>
+                    <a class="button is-small" (click)="unselectAllTags()">Hide all</a>
+                </div>
+    
+                <div class="tags">
+                    <a *ngFor="let tag of availableTags" class="tag is-white" (click)="toggle(tag.id)" [ngClass]="isVisible(tag.id) ? getTagStyle(tag) : ''">{{ tag.name }}</a>
+                    <a class="tag is-white" (click)="toggle('untagged')" [ngClass]="{'is-dark': isVisible('untagged')}">Untagged</a>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+</div>
