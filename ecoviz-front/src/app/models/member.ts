@@ -53,7 +53,7 @@ export class Member {
 
     private static getType(tags): EMemberType {
         let isPartner = tags.filter((t) => t.id.startsWith('ecoviz:project')).length > 0
-        let isMember = tags.filter((t) => t.id.startsWith('ecoviz:membership')).length > 0
+        let isMember = tags.filter((t) => t.id.startsWith('ecoviz:membership') && t.id !== 'ecoviz:membership:p').length > 0
         
         if(isPartner && isMember)
             return EMemberType.ORGANIZATION_PARTNER;

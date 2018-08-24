@@ -1,0 +1,6 @@
+payara-micro-*.jar
+ROOT.war
+.vscode
+.settings/
+.classpath
+.project

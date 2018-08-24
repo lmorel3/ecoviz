@@ -9,10 +9,14 @@ matrix:
         #- sed -i.bak -E "s/(mongodb-server-host-1:)(.*)$/\1 $MONGO_HOST/g" src/main/resources/META-INF/jnosql.yaml 
         - mvn -B clean install
 
-      after_script:
+      after_success:
         - # Triggers redeployment
         - echo "Triggering webhook"
         - "curl -X POST \"$HOOK_URL\" -H \"X-Hook-Token:$HOOK_TOKEN\" -H \"Content-Type:application/json\" -d '{\"name\":\"ecoviz-service\"}\"'"
+
+      branches:
+        only:
+          - master
 
     - language: javascript
       before_script:
@@ -23,11 +27,15 @@ matrix:
         - yarn install
         - yarn run build:prod
         
-      after_script:
+      after_success:
         - # Trigger redeployment 
         - echo "Triggering ecoviz-front"
         - "curl -X POST \"$HOOK_URL\" -H \"X-Hook-Token:$HOOK_TOKEN\" -H \"Content-Type:application/json\" -d '{\"name\":\"ecoviz-front\"}\"'"
       
+      branches:
+        only:
+          - master
+
       cache:
         yarn: true
         directories:
