@@ -37,6 +37,11 @@ import { TagsModalComponent } from './shared/tags-modal';
 import { LoginComponent } from './components/login';
 import { LinkComponent } from './components/members/link/link.component';
 import { EditModalComponent } from './components/home/edit-modal/edit-modal.component';
+import { NoContentComponent } from './components/no-content';
+import { GraphComponent, TreeComponent } from './shared/graph';
+import { AddressLookupComponent } from './shared/address-lookup';
+
+import { FilterTagsPipe } from './pipes/filter-tags';
 
 import { ProjectService } from './services/project-service';
 import { MemberService } from './services/member-service';
@@ -47,10 +52,6 @@ import { TagService } from './services/tag-service';
 import { AuthService } from './services/auth-service';
 
 import { AuthInterceptor } from './interceptors';
-
-import { NoContentComponent } from './components/no-content';
-import { GraphComponent, TreeComponent } from './shared/graph';
-import { AddressLookupComponent } from './shared/address-lookup';
 
 import '../styles/styles.scss';
 import '../styles/headings.css';
@@ -83,7 +84,8 @@ interface StoreType {
     LoginComponent,
     LinkComponent,
     AddressLookupComponent,
-    EditModalComponent
+    EditModalComponent,
+    FilterTagsPipe
   ],
   /**
    * Import Angular's modules.

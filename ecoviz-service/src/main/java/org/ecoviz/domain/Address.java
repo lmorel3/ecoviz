@@ -17,6 +17,18 @@ import org.jnosql.artemis.Entity;
 @Entity
 public class Address {
 
+    public final static Address DEFAULT_LOCATION;
+
+    static {
+        DEFAULT_LOCATION = new Address();
+        DEFAULT_LOCATION.setCityName("");
+        DEFAULT_LOCATION.setOsmCityId(-1L);
+        DEFAULT_LOCATION.setStreet("");
+        DEFAULT_LOCATION.setZipCode("");
+        DEFAULT_LOCATION.setLatitude(39.292);
+        DEFAULT_LOCATION.setLongitude(-40.869);
+    }
+
     @Column
     private String street;
     
@@ -37,9 +49,6 @@ public class Address {
     
     @Column
     private Double latitude;
-
-    @Column
-    private Boolean hasBeenEdited = false;
     
     public void setStreet(String street) {
         this.street = street;
@@ -73,10 +82,6 @@ public class Address {
         this.longitude = longitude;
     }
     
-    public void setHasBeenEdited(Boolean hasBeenEdited) {
-        this.hasBeenEdited = hasBeenEdited;
-    }
-
     public Long getOsmCityId() {
         return osmCityId;
     }
@@ -99,10 +104,6 @@ public class Address {
     
     public Double getLatitude() {
         return latitude;
-    }
-
-    public Boolean hasBeenEdited() {
-        return hasBeenEdited;
     }
     
     public static Address fromDto(AddressDto addressDto, CityDto cityDto) {

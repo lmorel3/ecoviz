@@ -12,6 +12,8 @@ package org.ecoviz.services;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -98,40 +100,51 @@ public class MemberService {
 			organizationRepository.save(organization);
 	}
 
-	/**
-	 * Merges an organization into a partner
-	 * - Keeps the name of the orgnanization (which is used when importing organizations)
-	 * - Keeps both tags list, except partner's membership
-	 * - Keeps both address except (except if they have the same zipcode)
-	 */
-	public void mergeOrganizations(String organizationId, String partnerId) {
-		Optional<Organization> optOrg = organizationRepository.findById(organizationId);
+
+	public void mergeOrganizations(String memberId, String partnerId) {
+		Optional<Organization> optMember = organizationRepository.findById(memberId);
 		Optional<Organization> optPart = organizationRepository.findById(partnerId);
 
-		if(!optOrg.isPresent() || !optPart.isPresent()) { return; }
+		if(!optMember.isPresent() || !optPart.isPresent()) { return; }
+		
+		Organization organization = mergeOrganizations(optMember.get(), optPart.get());
 
-		Organization organization = optPart.get();
-		organization.setName(optOrg.get().getName()); // Keeps organization's name
+		organizationRepository.deleteById(memberId); 	// Removes the member
+		organizationRepository.save(organization);		// Save the up to date partner
+	}
+
+	/**
+	 * Merges a member into a partner
+	 * - Keeps the name of the member (which is used when importing members)
+	 * - Keeps both tags list, except partner's membership
+	 * - Keeps both address:
+	 * 		-> locations[0] = partner's address (or member's address address if not exists)
+	 * 		-> locations[1] = member's address (if exists)
+	 */
+	public Organization mergeOrganizations(Organization member, Organization partner) {
+		logger.info("Merging member #" + member.getId() + " with partner #" + partner.getId());
+
+		String oldName = String.valueOf(partner.getName());
+		String oldMembership = String.valueOf(partner.getTagValueByPrefixOrDefault("ecoviz:membership", ""));
+
+		Organization organization = partner;
+		organization.setName(member.getName()); // Keeps member's name
 
 		// Keeps partner's tags without membership
-		List<Tag> tags = organization.getTags().stream().filter(t -> !t.getId().startsWith("ecoviz:membership")).collect(Collectors.toList());
+		List<Tag> tags = partner.getTags().stream().filter(t -> !t.getId().startsWith("ecoviz:membership")).collect(Collectors.toList());
 
-		// Adds organization's tags, and keep distinct values
-		tags.addAll(optPart.get().getTags());
-		tags.add(new Tag("ecoviz:oldname", optPart.get().getName())); // Keeps old name of the partner
-		tags.add(new Tag("ecoviz:oldmembership", optPart.get().getTagValueByPrefixOrDefault("ecoviz:membership", "")));
+		// Adds member's tags, and keep distinct values
+		tags.addAll(member.getTags());
+		tags.add(new Tag("ecoviz:old:name", oldName)); // Keeps old name of the partner
+		tags.add(new Tag("ecoviz:old:membership", oldMembership));
+		tags.add(Tag.make("ecoviz:is", "merged"));
 
 		tags = new ArrayList<>(new HashSet<>(tags));
-
-		Address baseLocation = organization.getLocations().stream().findFirst().orElse(null);
-		for(Address location : optPart.get().getLocations()) {
-			if(baseLocation != null && !location.getZipCode().equals(baseLocation.getZipCode())) {
-				organization.addLocation(location);
-			}
-		} 
-
-		organizationRepository.deleteById(optOrg.get().getId()); // Removes organization
-		organizationRepository.save(organization);			     // Save the up to date partner
+		organization.setTags(tags);
+		
+		organization.getLocations().addAll(member.getLocations());
+	
+		return organization;
 	}
 
 	/**
@@ -141,15 +154,65 @@ public class MemberService {
 	 * - The organization takes the others (or the first one if only one exists)
 	 * - The organization takes every tags except ecoviz:projects and ecoviz:country
 	 */
-	public void splitOrganization(String organizationId) {
+	public void splitOrganization(String organizationId) {		
+		logger.info("Splitting organization #" + organizationId);
+
 		Optional<Organization> optOrg = organizationRepository.findById(organizationId);
 		if(!optOrg.isPresent()) { return; }
 
 		Organization organization = optOrg.get();
-		if(organization.getTagsByPrefix("ecoviz:old").isEmpty()) { return; }
+		Organization[] result = splitOrganization(organization);
 
+		organizationRepository.save(Arrays.asList(result));
+	}
 
+	public Organization[] splitOrganization(Organization organization) {
+		String[] mendatoryTags = new String[] { "is:merged", "old:name", "old:membership" };
 
+		for(String tag : mendatoryTags) {
+			if(!organization.findTagById("ecoviz:" + tag).isPresent())
+				throw new RuntimeException("This organization is not in a merged state");
+		}
+
+		Organization partner = organization;
+		Organization member = new Organization();
+
+		// Old values
+		String oldName = organization.getName();
+		String partnerMembership = organization.getTagValueByPrefixOrDefault("ecoviz:old:membership", "");
+		String memberMembership = organization.getTagValueByPrefixOrDefault("ecoviz:membership", "");
+
+		// Locations
+		Address partnerLocation = Address.DEFAULT_LOCATION, memberLocation = Address.DEFAULT_LOCATION;
+		if(organization.getLocations().size() == 1) {
+			partnerLocation = organization.getLocations().get(0);
+			memberLocation = organization.getLocations().get(0);
+		} else if(organization.getLocations().size() > 1) {
+			partnerLocation = organization.getLocations().get(0);
+			memberLocation = organization.getLocations().get(1);
+		}
+
+		// Partner
+		List<Tag> partnerTags = new ArrayList<>();
+		partnerTags.addAll(organization.getTagsByPrefix("ecoviz:project"));
+		partnerTags.addAll(organization.getTagsByPrefix("ecoviz:country"));
+		partnerTags.addAll(organization.getTagsByPrefix("ecoviz:tag"));
+		if(!partnerMembership.isEmpty()) { partnerTags.add(Tag.make("ecoviz:membership", partnerMembership)); }
+
+		partner.setName(organization.findTagById("ecoviz:old:name").get().getName());
+		partner.setTags(partnerTags);
+		partner.setLocations(Arrays.asList(partnerLocation));
+
+		// Member
+		List<Tag> memberTags = new ArrayList<>();
+		memberTags.add(Tag.make("ecoviz:membership", memberMembership));
+
+		member.setName(oldName);
+		member.setId(RandomHelper.uuid());
+		member.setTags(memberTags);
+		member.setLocations(Arrays.asList(memberLocation));
+
+		return new Organization[] { partner, member };
 	}
 	
 	/**

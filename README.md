@@ -1,4 +1,5 @@
 # EcoViz
+[![Build Status](https://travis-ci.org/lmorel3/ecoviz.svg?branch=master)](https://travis-ci.org/lmorel3/ecoviz)
 
 ## Project overwiew
 

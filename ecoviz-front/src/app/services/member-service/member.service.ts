@@ -46,6 +46,14 @@ export class MemberService {
     importOrganizations(csvData: string) {
         return this.http.post<void>(environment.apiUrl + '/api/members/organizations/import', csvData);
     }
+
+    merge(organizationId: string, partner: any) {
+        return this.http.post(environment.apiUrl + '/api/members/organizations/' + organizationId + '/merge', partner);
+    }
+
+    split(organizationId: string) {
+        return this.http.post(environment.apiUrl + '/api/members/organizations/' + organizationId + '/split', {});
+    }
     
     deleteOrganization(member: Member) {
         return this.http.delete(environment.apiUrl + '/api/members/organizations/' + member.id);

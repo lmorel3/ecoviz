@@ -10,13 +10,9 @@
 package org.ecoviz.converters;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -28,9 +24,9 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.ecoviz.domain.Address;
-import org.ecoviz.domain.dto.AddressDto;
 import org.ecoviz.domain.Organization;
 import org.ecoviz.domain.Tag;
+import org.ecoviz.domain.dto.AddressDto;
 import org.ecoviz.domain.dto.CityDto;
 import org.ecoviz.domain.enums.EProjectCsvField;
 import org.ecoviz.helpers.NominatimHelper;
@@ -175,7 +171,7 @@ public class ProjectConverter {
 
         if(organization.getLocations().size() > 0) {
             location = organization.getLocations().get(0);
-            hasAddress = location.getOsmCityId() != null;    
+            hasAddress = location.getOsmCityId() != null && location.getOsmCityId() > 0;    
         }
         
         for(Tag project : organization.getTagsByPrefix("ecoviz:project")) {
@@ -208,17 +204,20 @@ public class ProjectConverter {
     private Address createAddressFromRecord(CSVRecord record) {
         Address address = null;
 
+        if(record.get(EProjectCsvField.CITY).isEmpty() || record.get(EProjectCsvField.COUNTRY).isEmpty()) {
+            return Address.DEFAULT_LOCATION;
+        }
+
         try {
-            if(!record.get(EProjectCsvField.CITY).isEmpty() && !record.get(EProjectCsvField.COUNTRY).isEmpty()) {
-                AddressDto dto = new AddressDto();
-                dto.setStreet(record.get(EProjectCsvField.ADDRESS));
-                
-                CityDto city = nominatimHelper.searchCity(record.get(EProjectCsvField.CITY), record.get(EProjectCsvField.POSTCODE), record.get(EProjectCsvField.COUNTRY));
-                
-                address = Address.fromDto(dto, city);
-            }
+            AddressDto dto = new AddressDto();
+            dto.setStreet(record.get(EProjectCsvField.ADDRESS));
+            
+            CityDto city = nominatimHelper.searchCity(record.get(EProjectCsvField.CITY), record.get(EProjectCsvField.POSTCODE), record.get(EProjectCsvField.COUNTRY));
+            
+            address = Address.fromDto(dto, city);
         } catch (RuntimeException e) {
             System.err.println("Location not found for " + record.get(EProjectCsvField.CITY));
+            address = Address.DEFAULT_LOCATION;
         }
         
         return address;
