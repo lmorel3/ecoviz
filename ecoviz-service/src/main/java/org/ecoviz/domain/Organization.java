@@ -124,6 +124,10 @@ public class Organization {
     
     public static Organization fromDto(OrganizationDto dto, List<Address> address) {
         Organization member = new Organization();
+
+        if(address == null || address.size() == 0) {
+            member.addLocation(Address.DEFAULT_LOCATION);
+        }
         
         member.setId(dto.getId());
         member.setName(dto.getName());

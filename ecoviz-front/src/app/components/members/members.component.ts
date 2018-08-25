@@ -224,8 +224,7 @@ export class MembersComponent implements OnInit {
             .subscribe((partner) => {
                 /** Links member and partner, then reloads the map **/
                 if(!!partner) {
-                    partner.memberId = member.id;
-                    that.partnerService.updatePartner(partner).subscribe(() => {
+                    that.memberService.merge(member.id, partner).subscribe(() => {
                         that.sidebar.close()
                         that.reloadMap()
                     });
@@ -237,18 +236,9 @@ export class MembersComponent implements OnInit {
         if(confirm('Are you sure?')) {
             let that = this;
             let memberId = that.selectedItem.id;
-            this.partnerService.getPartners().subscribe((partners: Partner[]) => {
-                let partner = partners.find(item => item.memberId === memberId);
-
-                /** Once the corresponding partner as been found, the link is deleted, and map updated **/
-                if(!!partner) {
-                    partner.memberId = null;
-                    that.partnerService.updatePartner(partner).subscribe(() => {
-                        that.sidebar.close()
-                        that.reloadMap()
-                    });
-                }
-
+            this.memberService.split(memberId).subscribe(() => {
+                that.sidebar.close()
+                that.reloadMap()
             });
         }
     }
@@ -389,6 +379,8 @@ export class MembersComponent implements OnInit {
     
         if(tag.id.startsWith('ecoviz:tag'))
             return 'is-info';
+
+        return ''
     
     }
 

@@ -58,16 +58,21 @@ SPDX-License-Identifier: EPL-2.0
                         {{ address.country }}
 
                         <span class="member-actions">
-                            <i class="fa fa-tag" (click)="showTagsModal()"></i>
-                            <i class="fa fa-remove" (click)="deleteMember()"></i>
-                            <i class="fa fa-link link" *ngIf="selectedItem.type === memberType && authService.isAdmin()" (click)="showLinkModal()"></i>
-                            <i class="fa fa-unlink unlink" *ngIf="selectedItem.type === organizationAndPartnerType && authService.isAdmin()" (click)="showUnlinkPopup()"></i>
-                            <i class="fa fa-map-marker" (click)="centerMap(address)"></i>
+                            <i class="fa fa-map-marker" (click)="centerMap(address, 13)"></i>
                         </span>
                 </p>
 
+                <p style="margin-bottom: 17px;margin-top: 10px;" *ngIf="authService.isAdmin()">
+                    <span class="member-actions">
+                        <i class="fa fa-tag" (click)="showTagsModal()" ></i>
+                        <i class="fa fa-remove" (click)="deleteMember()"></i>
+                        <i class="fa fa-link link" *ngIf="selectedItem.type === memberType" (click)="showLinkModal()"></i>
+                        <i class="fa fa-unlink unlink" *ngIf="selectedItem.type === organizationAndPartnerType" (click)="showUnlinkPopup()"></i>
+                    </span>
+                </p>
+
                 <span class="tags" *ngIf="selectedItem.tags.length > 0" style="margin-bottom: 0">
-                    <span class="tag" *ngFor="let tag of selectedItem.tags">{{ tag.name }}</span>
+                    <span class="tag" [ngClass]="getTagStyle(tag)" *ngFor="let tag of selectedItem.tags | filterTags">{{ tag.name }}</span>
                 </span>
         
                 <p *ngIf="selectedItem.locations.length === 0">

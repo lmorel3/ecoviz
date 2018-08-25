@@ -65,9 +65,17 @@ public class MemberResource {
     @POST
     @Path("/organizations/{organizationId}/merge")
     @RolesAllowed({"admin"})
-    @Consumes({MediaType.TEXT_PLAIN})
-    public void mergeOrganizations(@PathParam("organizationId") String organizationId, @RequestBody String partnerId) {
-        memberService.mergeOrganizations(organizationId, partnerId);
+    @Consumes({MediaType.APPLICATION_JSON})
+    public void mergeOrganizations(@PathParam("organizationId") String organizationId, @RequestBody Organization partner) {
+        memberService.mergeOrganizations(organizationId, partner.getId());
+    }
+
+    @POST
+    @Path("/organizations/{organizationId}/split")
+    @RolesAllowed({"admin"})
+    @Consumes({MediaType.APPLICATION_JSON})
+    public void splitOrganization(@PathParam("organizationId") String organizationId) {
+        memberService.splitOrganization(organizationId);
     }
 
     @PUT
