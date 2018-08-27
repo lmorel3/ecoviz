@@ -54,20 +54,20 @@ SPDX-License-Identifier: EPL-2.0
                 <p *ngFor="let address of selectedItem.locations"> 
                         {{ selectedItem.name }}<br>
                         {{ address.street }}<br>
-                        {{ address.zipCode }} {{ address.cityName }}<br>
+                        {{ address.zipCode }} {{ address.city }}<br>
                         {{ address.country }}
 
                         <span class="member-actions">
-                            <i class="fa fa-map-marker" (click)="centerMap(address, 13)"></i>
+                            <i class="fa fa-map-marker" title="Recenter map" (click)="centerMap(address, 13)"></i>
                         </span>
                 </p>
 
                 <p style="margin-bottom: 17px;margin-top: 10px;" *ngIf="authService.isAdmin()">
                     <span class="member-actions">
-                        <i class="fa fa-tag" (click)="showTagsModal()" ></i>
-                        <i class="fa fa-remove" (click)="deleteMember()"></i>
-                        <i class="fa fa-link link" *ngIf="selectedItem.type === memberType" (click)="showLinkModal()"></i>
-                        <i class="fa fa-unlink unlink" *ngIf="selectedItem.type === organizationAndPartnerType" (click)="showUnlinkPopup()"></i>
+                        <i class="fa fa-tag" title="Show/edit tags" (click)="showTagsModal()" ></i>
+                        <i class="fa fa-remove" title="Remove the organization" (click)="deleteMember()"></i>
+                        <i class="fa fa-link link" title="Link member with a partner" *ngIf="selectedItem.type === memberType" (click)="showLinkModal()"></i>
+                        <i class="fa fa-unlink unlink" title="Unlink" *ngIf="selectedItem.type === organizationAndPartnerType" (click)="showUnlinkPopup()"></i>
                     </span>
                 </p>
 

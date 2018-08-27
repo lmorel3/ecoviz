@@ -13,7 +13,7 @@
 
     <groupId>org.ecoviz</groupId>
     <artifactId>ecoviz-service</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.1</version>
     <packaging>war</packaging>
     
     <properties>

@@ -13,7 +13,6 @@ import {
 } from '@angular/core';
 
 import { AppState } from '../../app.service';
-import { ProjectService } from '../../services/project-service';
 
 @Component({
   /**
@@ -43,7 +42,6 @@ export class HomeComponent implements OnInit {
    */
   constructor(
     public appState: AppState,
-    private _projectService: ProjectService
   ) {}
 
   public ngOnInit() {

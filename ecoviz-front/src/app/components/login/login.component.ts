@@ -12,11 +12,7 @@ import {
     OnInit
   } from '@angular/core';
   
-  import { AppState } from '../../app.service';
-  import { ProjectService } from '../../services/project-service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { UserService } from '../../services/user-service/user.service';
-import { values } from 'd3';
 import { AuthService } from '../../services/auth-service';
 import { Router } from '@angular/router';
   
@@ -31,7 +27,6 @@ import { Router } from '@angular/router';
   export class LoginComponent implements OnInit {
   
     private loginForm: FormGroup;
-    private badCredentials = false;
     
     constructor(
         private authService: AuthService,
@@ -53,7 +48,6 @@ import { Router } from '@angular/router';
         let data = this.loginForm.value;
         this.authService.login(data.username, data.password).subscribe((tokenDto: any) => {
             if(tokenDto === null || tokenDto.token.length === 0) {
-                this.badCredentials = true;
             } else {
                 this.router.navigateByUrl('/');
             }

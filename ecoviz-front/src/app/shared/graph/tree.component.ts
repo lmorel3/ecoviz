@@ -22,88 +22,7 @@ import { EditModalComponent } from '../../components/home/edit-modal/edit-modal.
 @Component({
     selector: 'tree',
     template: '<div id="tree-container" #chartContainer></div>',
-    styles: [`
-
-        #tree-container {
-            overflow:hidden;
-            max-height:88vh;
-            height:88vh;
-            max-width: 100vw;
-            width: 100vw;
-        }
-
-        .node {
-            cursor: pointer;
-        }
-        
-        .node circle {
-            fill: #fff;
-            stroke: #50514F;
-            stroke-width: 1.5px;
-        }
-
-        circle.PARTNER {
-            fill: #FFE066;
-        }
-
-        circle.PROJECT {
-            fill: #2ea9de;
-            stroke: #247BA0;
-        }
-
-        circle.COUNTRY {
-            fill: #F25F5C;
-        }
-
-        circle.TAG {
-            fill: #50514F;
-        }
-        
-        .node text {
-            font: 10px sans-serif;
-        }
-
-        .node text.rootNode {
-            font-weight: 600;
-            font-size: 14px;
-        }
-        
-        .node text.hasChildren {
-            font-weight: 600;
-            font-size: 12px;
-        }
-        
-        .link {
-            fill: none;
-            stroke: #ccc;
-            stroke-width: 1.5px;
-        }
-
-        .links {
-            stroke-opacity: 0.8;
-            stroke-width: 4px
-        }
-
-        text {
-            font: 1vw sans-serif;
-            pointer-events: none;
-        }
-    
-        div#label_tooltip {
-            position: absolute;
-            text-align: center;
-            max-width: 50em;
-            color: #363636;
-            height: auto;
-            padding: 2px;
-            font: 12px sans-serif;
-            background: #f5f5f5;
-            border: 0px;
-            border-radius: 2px;
-            pointer-events: none;
-        }
-  
-    `],
+    styleUrls: [ './tree.component.scss' ],
     encapsulation: ViewEncapsulation.None
 })
 export class TreeComponent implements OnInit {
@@ -133,6 +52,8 @@ export class TreeComponent implements OnInit {
     private svg: any;
 
     private labelTooltip: any;
+
+    private lastClickedNode: any;
 
     setParams(width: number,
                height: number,
@@ -231,6 +152,15 @@ export class TreeComponent implements OnInit {
 
         });
 
+        let resetBtn = d3.select(this.container.nativeElement)
+            .append('button')
+            .attr('class', 'button is-small')
+            .attr('id', 'recenter-btn')
+            .html('Recenter')
+            .on('click', () => {
+                if(!!this.lastClickedNode) this.centerNode(this.lastClickedNode);
+            });
+
         this.svg = svg;
 
         // declares a tree layout and assigns the size of the tree
@@ -261,6 +191,9 @@ export class TreeComponent implements OnInit {
 
     // toggle children on click
     click(d) {
+        if(d.depth > 6)
+            return alert('Tip: right click > set as root');
+
         let promise: Promise<any>;
 
         // If data has to be retrieved from API
@@ -280,7 +213,6 @@ export class TreeComponent implements OnInit {
                 d._children = null;
             }
             this.update(d);
-            //this.centerNode(d);
         });
 
     }
@@ -308,6 +240,8 @@ export class TreeComponent implements OnInit {
      * @param source 
      */
     update(source) {
+        this.lastClickedNode = source;
+
         let height = (this.svg.attr('height') * (source.depth+1));
         this.svg.attr('height', height);
 
@@ -337,7 +271,6 @@ export class TreeComponent implements OnInit {
                 return 'translate(' + (source.y0 + margin.top) + ',' + (source.x0 + margin.left) + ')';
             })
             .on('click', (d) => { that.click(d); })
-            .on('dblclick', (d) => { that.setAsRoot(d); })
             
             .on("mouseover", function(d) {
                 if(d.data.name.length > 20) {
@@ -540,7 +473,7 @@ export class TreeComponent implements OnInit {
                     that.showTagsModal(d);
                 }
             }, {
-                label: "Edit partner",
+                label: "Edit address",
                 action: function (d, i) {
                     that.showEditModal(d);
                 }              
@@ -558,17 +491,8 @@ export class TreeComponent implements OnInit {
               id: d.data.id,
               name: d.data.name
             })
-            .subscribe((tags) => {
-                if(!d.children) return; // don't expand if already collapsed
-
-                if(d._children == null) {
-                    this.collapse(d);
-                }
-                
-                d.children = null;
-                d._children = null;
-
-                this.click(d); // Reload children
+            .subscribe(() => {
+                this.resetNode(d);
             });
     }
 
@@ -576,20 +500,23 @@ export class TreeComponent implements OnInit {
      * Opens a modal popup for editing tags 
      */
     showEditModal(d: any) {
-        let disposable = this.simpleModalService.addModal(EditModalComponent, d.data)
+        this.simpleModalService.addModal(EditModalComponent, d.data)
             .subscribe((tags) => {
-                if(!d.data.children) return; // don't expand if already collapsed
-
-                // Otherwise: reload
-                if(d.data._children == null) {
-                    this.collapse(d);
-                }
-                
-                d.data.children = null;
-                d.data._children = null;
-
-                this.click(d);
+                this.resetNode(d);
             });
+    }
+
+    resetNode(d: any) {
+        if(!d.children) return; // don't expand if already collapsed
+
+        if(d._children == null) {
+            this.collapse(d);
+        }
+        
+        d.children = null;
+        d._children = null;
+
+        this.click(d); // Reload children
     }
 
     /**
@@ -607,7 +534,7 @@ export class TreeComponent implements OnInit {
         filter         
                     .append("feFlood")
                     .attr("flood-color", "white")
-        let filterMerge = filter.append("feComposite")
+        filter.append("feComposite")
                     .attr("in", "SourceGraphic");            
     }
 

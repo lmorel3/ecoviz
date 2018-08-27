@@ -32,7 +32,7 @@ export class ProjectsSettingsComponent implements OnInit {
     private badData = false;
     private isUpdatingProjects = false;
 
-    projectsCsvFirstLine = 'PROJECT,MEMBERSHIP,NAME,COUNTRY_CODE,ROLE,ADDRESS,CITY,POSTCODE,COUNTRY,LATITUDE,LONGITUDE,OSM_ID,TAGS';    
+    projectsCsvFirstLine = 'PROJECT,MEMBERSHIP,NAME,COUNTRY_CODE,ROLE,ADDRESS,CITY,POSTCODE,COUNTRY,LATITUDE,LONGITUDE,TAGS';    
 
     constructor(
         private authService: AuthService,

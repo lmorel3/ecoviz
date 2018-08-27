@@ -16,6 +16,8 @@ public class AddressDto {
     private String cityName;
     private String zipCode;
     private String country;
+    private Double latitude;
+    private Double longitude;
     
     public void setNumber(String number) {
         this.number = number;
@@ -54,6 +56,22 @@ public class AddressDto {
     
     public String getCountry() {
         return country;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+    
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public Double getLatitude() {
+        return latitude;
     }
     
     @Override

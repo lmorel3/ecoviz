@@ -10,19 +10,17 @@ SPDX-License-Identifier: EPL-2.0
 <div class="modal-content" *ngIf="!!current">
 
     <div class="modal-header">
-        <h4>Edit '{{name}}'</h4>
+        <h4>{{name}}</h4>
     </div>
     
     <div class="modal-body">
 
+        <p>Address of {{name}}:</p>
         <address-lookup 
             [current]="currentLocation"
             (onSelected)="onAddressSelected($event)"
         ></address-lookup>
-
-        <br>
-        <p *ngIf="!!current.memberId"><strong>{{name}}</strong> is <abbr title="5b683dce2624795ba4a659b7">member</abbr> of the foundation</p>
-
+        
     </div>
 
     <div class="modal-footer field is-grouped">

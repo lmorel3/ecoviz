@@ -28,7 +28,7 @@ import javax.ws.rs.NotFoundException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.ecoviz.domain.Address;
+import org.ecoviz.domain.Location;
 import org.ecoviz.domain.Organization;
 import org.ecoviz.domain.Tag;
 import org.ecoviz.domain.dto.AddressDto;
@@ -59,7 +59,7 @@ public class MemberService {
 	 * @param Organization member
 	 */
 	public void createOrganization(OrganizationDto memberDto) {
-	    List<Address> addresses = createLocationsWithCities(memberDto.getLocations());
+	    List<Location> addresses = createLocationsWithCities(memberDto.getLocations());
 	    
 	    try {
 	        Optional<Organization> existing = organizationRepository.findByName(memberDto.getName());
@@ -90,7 +90,7 @@ public class MemberService {
 		organizationRepository.save(organization);
 	}
 
-	public void updateOrganizationAddress(String organizationId, Integer addressIndex, Address address) {
+	public void updateOrganizationAddress(String organizationId, Integer addressIndex, Location address) {
 			Optional<Organization> optOrg = organizationRepository.findById(organizationId);
 			if(!optOrg.isPresent()) { return; }
 	
@@ -183,7 +183,7 @@ public class MemberService {
 		String memberMembership = organization.getTagValueByPrefixOrDefault("ecoviz:membership", "");
 
 		// Locations
-		Address partnerLocation = Address.DEFAULT_LOCATION, memberLocation = Address.DEFAULT_LOCATION;
+		Location partnerLocation = Location.DEFAULT_LOCATION, memberLocation = Location.DEFAULT_LOCATION;
 		if(organization.getLocations().size() == 1) {
 			partnerLocation = organization.getLocations().get(0);
 			memberLocation = organization.getLocations().get(0);
@@ -221,35 +221,17 @@ public class MemberService {
 	 */
     public void importOrganizations(String data) throws IOException {
 		logger.info("Importing organizations...");
-		CSVParser records = CSVFormat.DEFAULT.parse(new StringReader(data));
+		data = data.replaceAll("(?m)^[ \t]*\r?\n", ""); // removes blank lines to speed up parsing
+		CSVParser records = CSVFormat.DEFAULT
+								.withSkipHeaderRecord(true)
+								.parse(new StringReader(data));
 		
-		logger.info("Importing " + (records.getRecordNumber()-1) + "organizations");
-		Thread thread = new Thread(new Runnable(){
-		
-			@Override
-			public void run() {
-				boolean isFirst = true;
-				
-				for (CSVRecord record : records) {
-					
-					if(!isFirst) {
-						try {
-							createOrganization(OrganizationDtoFactory.createFromCsv(record));
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-					
-					if(isFirst) { isFirst = false; }
-					
-				}			
+		logger.info("Importing " + (records.getRecordNumber()) + "organizations");
+		for (CSVRecord record : records) {
+			createOrganization(OrganizationDtoFactory.createFromCsv(record));
+		}			
 
-				logger.info("Import completed");
-			}
-		});
-
-		thread.start();
-	
+		logger.info("Import completed");
 	}
     
 	public List<Organization> findOrganizations() {
@@ -273,8 +255,8 @@ public class MemberService {
 	/**
 	 *  Creates concrete addresses
 	 */
-	private List<Address> createLocationsWithCities(List<AddressDto> locations) {
-	    List<Address> addresses = new LinkedList<>();
+	private List<Location> createLocationsWithCities(List<AddressDto> locations) {
+	    List<Location> addresses = new LinkedList<>();
 	    
 	    for(AddressDto location : locations) {
 	        createAddressIfCityFound(location, addresses);
@@ -286,11 +268,16 @@ public class MemberService {
 	/**
 	 * Instanciates an address with a city retrieved from OSM Nominatim service
 	 */
-	private void createAddressIfCityFound(AddressDto location, List<Address> addresses) {
+	private void createAddressIfCityFound(AddressDto location, List<Location> addresses) {
+		if(location.getLatitude() != null && location.getLongitude() != null) {
+			addresses.add(Location.fromDto(location));
+			return;
+		}
+
 	    try {
 	        CityDto city = nominatimHelper.searchCity(location.getCityName(), location.getCountry(), location.getZipCode());
 	        
-	        Address address = Address.fromDto(location, city);
+	        Location address = Location.fromDto(location, city);
             addresses.add(address);
         } catch (RuntimeException e) {
             logger.info("City not found (" + location + ")");

@@ -74,7 +74,6 @@ export class AddressLookupComponent implements OnInit, OnChanges {
     }
 
     search(term) {
-        console.log(term);
         let promise: Promise<any> = this.geocoder.search({ q: term, addressdetails:true  });
         return from(promise)
     }

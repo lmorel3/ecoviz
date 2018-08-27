@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
 
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AuthService } from '../../../services/auth-service';
-import { MemberService } from '../../../services/member-service';
+import { OrganizationService } from '../../../services/organization-service';
 
 @Component({
     selector: 'members-settings',
@@ -32,11 +32,11 @@ export class MembersSettingsComponent implements OnInit {
     private badData = false;
     private isImportingOrganizations = false;
 
-    membersCsvFirstLine = '"Name","Billing Street","Billing City","Billing Postal Code","Billing Country","MemberType","Membership Dues"';
+    membersCsvFirstLine = '"Name","Billing Street","Billing City","Billing Postal Code","Billing Country","Latitude","Longitude","MemberType"';
 
     constructor(
         private authService: AuthService,
-        private memberService: MemberService,
+        private organizationService: OrganizationService,
         private router: Router
     ) {}
   
@@ -55,10 +55,9 @@ export class MembersSettingsComponent implements OnInit {
         if(!csvData.startsWith(this.membersCsvFirstLine)) {
             this.badData = true;
         } else {
-            let that = this;
-            this.memberService.importOrganizations(csvData).subscribe(() => {
-                that.isImportingOrganizations = true;
-                setTimeout(() => { that.isImportingOrganizations = false; }, 10000);
+            this.isImportingOrganizations = true;
+            this.organizationService.importOrganizations(csvData).subscribe(() => {
+                this.isImportingOrganizations = false;
             });
             this.badData = false;
         }

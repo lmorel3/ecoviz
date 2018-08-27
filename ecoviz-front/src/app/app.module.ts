@@ -44,10 +44,9 @@ import { AddressLookupComponent } from './shared/address-lookup';
 import { FilterTagsPipe } from './pipes/filter-tags';
 
 import { ProjectService } from './services/project-service';
-import { MemberService } from './services/member-service';
+import { OrganizationService } from './services/organization-service';
 import { UserService } from './services/user-service';
 import { DataService } from './services/data-service';
-import { PartnerService } from './services/partner-service';
 import { TagService } from './services/tag-service';
 import { AuthService } from './services/auth-service';
 
@@ -129,9 +128,8 @@ interface StoreType {
     environment.ENV_PROVIDERS,
     APP_PROVIDERS,
     ProjectService,
-    MemberService,
+    OrganizationService,
     DataService,
-    PartnerService,
     TagService,
     UserService,
     AuthService,

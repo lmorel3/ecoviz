@@ -10,18 +10,10 @@
 import { Component, OnInit } from '@angular/core';
 import { SimpleModalComponent } from "ngx-simple-modal";
 
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs';
-import { filter } from 'rxjs/operators';
-
-import { Tag } from '../../../models/tag.model';
-import { TagModel } from 'ngx-chips/core/accessor';
-import { DataService } from '../../../services/data-service';
-import { TreeData } from '../../../models/tree-data.model';
-import { PartnerService } from '../../../services/partner-service';
-import { TagService } from '../../../services/tag-service';
-import { Partner } from '../../../models/partner.model';
 import { Location } from '../../../models/location';
+import { Organization } from '../../../models/organization';
+import { OrganizationService } from '../../../services/organization-service';
+import { Tag } from '../../../models/tag.model';
 
 export interface EditModalModel {
     id: String;
@@ -30,25 +22,24 @@ export interface EditModalModel {
     selector: 'confirm',
     templateUrl: './edit-modal.component.html'
 })
-export class EditModalComponent extends SimpleModalComponent<EditModalModel, Partner> implements EditModalModel, OnInit {
+export class EditModalComponent extends SimpleModalComponent<EditModalModel, Organization> implements EditModalModel, OnInit {
     
     currentLocation: Location;
     id: String;
 
-    current: Partner;
+    current: Organization;
 
     constructor(
-        private partnerService: PartnerService,
+        private partnerService: OrganizationService,
     ) {
         super();
     }
 
     ngOnInit(): void {
-        this.partnerService.getPartnerById(this.id).subscribe((p: Partner) => {
+        this.partnerService.getPartnerById(this.id).subscribe((p: Organization) => {
             this.current = p;
-            if(!!p.location) {
-                p.location.countryCode = p.country;
-                this.currentLocation = p.location;
+            if(p.locations.length > 0) {
+                this.currentLocation = p.locations[0];
             }
         });
     }
@@ -65,9 +56,16 @@ export class EditModalComponent extends SimpleModalComponent<EditModalModel, Par
 
         // If an address has been set
         if(!!this.currentLocation) {
-            this.current.country = this.currentLocation.countryCode;
-            this.current.location = this.currentLocation;
+            this.current.locations[0] = this.currentLocation;
 
+            // Sets country code tag
+            let idxCountryCode = this.current.tags.findIndex((t) => t.id.startsWith('ecoviz:country'))
+            let countryCode = new Tag('ecoviz:country:' + this.currentLocation.countryCode.toLocaleLowerCase(), this.currentLocation.countryCode);
+
+            if(idxCountryCode > -1) this.current.tags[idxCountryCode] = countryCode;
+            else this.current.tags.push(countryCode);
+
+            // Updates partner
             this.result = this.current;
             this.partnerService.updatePartner(this.current).subscribe(() => {
                 that.close();

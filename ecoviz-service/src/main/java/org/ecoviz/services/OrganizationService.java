@@ -27,7 +27,7 @@ import javax.ws.rs.NotFoundException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
-import org.ecoviz.domain.Address;
+import org.ecoviz.domain.Location;
 import org.ecoviz.domain.Organization;
 import org.ecoviz.domain.Tag;
 import org.ecoviz.domain.dto.AddressDto;
@@ -67,7 +67,7 @@ public class OrganizationService {
 	 * @param Organization member
 	 */
 	public void createOrganization(OrganizationDto memberDto) {
-	    List<Address> addresses = createLocationsWithCities(memberDto.getLocations());
+	    List<Location> addresses = createLocationsWithCities(memberDto.getLocations());
 	    
 	    try {
 	        Optional<Organization> existing = organizationRepository.findByName(memberDto.getName());
@@ -98,14 +98,14 @@ public class OrganizationService {
 		organizationRepository.save(organization);
 	}
 
-	public void updateOrganizationAddress(String organizationId, Integer addressIndex, Address address) {
-			Optional<Organization> optOrg = organizationRepository.findById(organizationId);
-			if(!optOrg.isPresent()) { return; }
-	
-			Organization organization = optOrg.get();
-			organization.getLocations().set(addressIndex, address);
+	public void updateOrganizationAddress(String organizationId, Integer addressIndex, Location address) {
+		Optional<Organization> optOrg = organizationRepository.findById(organizationId);
+		if(!optOrg.isPresent()) { return; }
 
-			organizationRepository.save(organization);
+		Organization organization = optOrg.get();
+		organization.getLocations().set(addressIndex, address);
+
+		organizationRepository.save(organization);
 	}
 	
 	/**
@@ -114,42 +114,30 @@ public class OrganizationService {
 	 */
     public void importOrganizations(String data) throws IOException {
 		logger.info("Importing organizations...");
-		CSVParser records = CSVFormat.DEFAULT.parse(new StringReader(data));
+		CSVParser records = CSVFormat.DEFAULT
+									 .withFirstRecordAsHeader()
+									 .parse(new StringReader(data));
 		
-		logger.info("Importing " + (records.getRecordNumber()-1) + "organizations");
-		Thread thread = new Thread(new Runnable(){
-		
-			@Override
-			public void run() {
-				boolean isFirst = true;
-				
-				for (CSVRecord record : records) {
-					
-					if(!isFirst) {
-						try {
-							createOrganization(OrganizationDtoFactory.createFromCsv(record));
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-					
-					if(isFirst) { isFirst = false; }
-					
-				}			
-
-				logger.info("Import completed");
-			}
-		});
-
-		thread.start();
+		logger.info("Importing " + records.getRecordNumber() + "organizations");
+		for (CSVRecord record : records) {
+			createOrganization(OrganizationDtoFactory.createFromCsv(record));	
+		}
 	
 	}
 
 	////////////////////////////////////////////////
 
-	public void setUserTags(String organizationId, List<Tag> tags) {
+	public void setUserTags(String organizationId, List<Tag> providesTags) {
 		Optional<Organization> optOrg = organizationRepository.findById(organizationId);
 		if(!optOrg.isPresent()) { return; }
+
+		List<Tag> tags = new ArrayList<>();
+
+        // Handles new one (generates an id)
+        for(Tag tag : providesTags) {
+            if(tag.getId() == null) tag = Tag.make("ecoviz:tag", tag.getName());
+            tags.add(tag);
+        }
 
 		Organization organization = optOrg.get();
 		organization.setUserTags(tags);
@@ -219,8 +207,8 @@ public class OrganizationService {
 	/**
 	 *  Creates concrete addresses
 	 */
-	private List<Address> createLocationsWithCities(List<AddressDto> locations) {
-	    List<Address> addresses = new LinkedList<>();
+	private List<Location> createLocationsWithCities(List<AddressDto> locations) {
+	    List<Location> addresses = new LinkedList<>();
 	    
 	    for(AddressDto location : locations) {
 	        createAddressIfCityFound(location, addresses);
@@ -231,16 +219,26 @@ public class OrganizationService {
 	
 	/**
 	 * Instanciates an address with a city retrieved from OSM Nominatim service
+	 * -> if not found, adds the default one
 	 */
-	private void createAddressIfCityFound(AddressDto location, List<Address> addresses) {
+	private void createAddressIfCityFound(AddressDto location, List<Location> addresses) {
+		Location address = Location.DEFAULT_LOCATION;
+
+		// If it already has geolocation data, keeps it
+		if(location.getLatitude() != null && location.getLongitude() != null) {
+			address = Location.fromDto(location);
+			addresses.add(address);
+			return;
+		}
+
 	    try {
-	        CityDto city = nominatimHelper.searchCity(location.getCityName(), location.getCountry(), location.getZipCode());
-	        
-	        Address address = Address.fromDto(location, city);
-            addresses.add(address);
+	        CityDto city = nominatimHelper.searchCity(location.getCityName(), location.getCountry(), location.getZipCode());  
+	        address = Location.fromDto(location, city);
         } catch (RuntimeException e) {
             logger.info("City not found (" + location + ")");
-        }
+		}
+		
+		addresses.add(address);
 	}
 
 }

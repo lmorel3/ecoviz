@@ -10,16 +10,11 @@
 import { Component, OnInit } from '@angular/core';
 import { SimpleModalComponent } from "ngx-simple-modal";
 
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs';
-import { filter } from 'rxjs/operators';
-
 import { Tag } from '../../models/tag.model';
-import { TagModel } from 'ngx-chips/core/accessor';
 import { DataService } from '../../services/data-service';
 import { TreeData } from '../../models/tree-data.model';
-import { PartnerService } from '../../services/partner-service';
 import { TagService } from '../../services/tag-service';
+import { OrganizationService } from '../../services/organization-service';
 
 export interface TagModalModel {
     id: string;
@@ -39,7 +34,7 @@ export class TagsModalComponent extends SimpleModalComponent<TagModalModel, Tag[
 
     constructor(
         private dataService: DataService,
-        private partnerService: PartnerService,
+        private organizationService: OrganizationService,
         private tagService: TagService
     ) {
         super();
@@ -60,7 +55,7 @@ export class TagsModalComponent extends SimpleModalComponent<TagModalModel, Tag[
         
         // Updates tags list
         let that = this;
-        this.partnerService.setTags(this.id, this.result).subscribe(() => {
+        this.organizationService.setTags(this.id, this.result).subscribe(() => {
             that.close();
         });
     }

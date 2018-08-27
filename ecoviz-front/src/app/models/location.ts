@@ -8,12 +8,10 @@
  * SPDX-License-Identifier: EPL-2.0
  ******************************************************************************/
 export class Location {
-    
-    osmCityId: Number;
-    
+        
     number: string;
     street: string;
-    cityName: string;
+    city: string;
     zipCode: string;
     country: string;
 
@@ -30,13 +28,17 @@ export class Location {
      */
     public static fromNominatim(data: any): Location {
         let location = new Location()
-        let address: any = data.address;
+        if(!data) return location;
 
-        location.osmCityId = data.osm_id;
+        let address: any = data.address;
         
         location.number = '';
         location.street =  address.road;
-        location.cityName = address.city ? address.city : address.town;
+        
+        if(!!address.city) location.city = address.city;
+        else if(!!address.town) location.city = address.town;
+        else if(!!address.village) location.city = address.village;
+
         location.zipCode = address.postcode;
         location.country = address.country;
 
@@ -52,13 +54,11 @@ export class Location {
 
     public static toNominatim(location: Location): any {
         return {
-            osm_id: location.osmCityId,
             address: {
                 road: location.street,
-                city: location.cityName,
-                zipCode: location.zipCode,
+                city: location.city,
+                postcode: location.zipCode,
                 country: location.country,
-                country_code: location.countryCode,
             },
             lat: location.latitude,
             lon: location.longitude

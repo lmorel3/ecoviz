@@ -26,20 +26,25 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
-import org.ecoviz.domain.Address;
+import org.ecoviz.domain.Location;
 import org.ecoviz.domain.Organization;
+import org.ecoviz.domain.Tag;
 import org.ecoviz.domain.dto.OrganizationDto;
 import org.ecoviz.services.MemberService;
+import org.ecoviz.services.OrganizationService;
 
-@Path("/members")
+@Path("/organizations")
 @RequestScoped
-public class MemberResource {
+public class OrganizationResource {
 
     @Inject
-    private MemberService memberService;
+    MemberService memberService;
 
+    @Inject
+    OrganizationService organizationService;
+    
     @POST
-    @Path("/organizations")
+    @Path("/")
     @RolesAllowed({"admin"})
     @Consumes({MediaType.APPLICATION_JSON})
     @Produces({MediaType.TEXT_PLAIN})
@@ -48,22 +53,23 @@ public class MemberResource {
     }
 
     @GET
-    @Path("/organizations")
+    @Path("/")
     @Produces({MediaType.APPLICATION_JSON})
     public List<Organization> findOrganizations() {
         return memberService.findOrganizations();
     }
 
     @POST
-    @Path("/organizations/import")
+    @Path("/import")
     @RolesAllowed({"admin"})
     @Consumes({MediaType.TEXT_PLAIN})
     public void importOrganizations(@RequestBody String data) throws IOException {
+        System.out.println("Importing organizations");
         memberService.importOrganizations(data);
     }
 
     @POST
-    @Path("/organizations/{organizationId}/merge")
+    @Path("/{organizationId}/merge")
     @RolesAllowed({"admin"})
     @Consumes({MediaType.APPLICATION_JSON})
     public void mergeOrganizations(@PathParam("organizationId") String organizationId, @RequestBody Organization partner) {
@@ -71,7 +77,7 @@ public class MemberResource {
     }
 
     @POST
-    @Path("/organizations/{organizationId}/split")
+    @Path("/{organizationId}/split")
     @RolesAllowed({"admin"})
     @Consumes({MediaType.APPLICATION_JSON})
     public void splitOrganization(@PathParam("organizationId") String organizationId) {
@@ -79,7 +85,7 @@ public class MemberResource {
     }
 
     @PUT
-    @Path("/organizations/{organizationId}")
+    @Path("/{organizationId}")
     @RolesAllowed({"admin"})
     @Consumes({MediaType.APPLICATION_JSON})
     public void updateOrganization(@PathParam("organizationId") String organizationId, @RequestBody Organization organization) {
@@ -87,15 +93,15 @@ public class MemberResource {
     }
 
     @PUT
-    @Path("/organizations/{organizationId}/addresses/{index}")
+    @Path("/{organizationId}/addresses/{index}")
     @RolesAllowed({"admin"})
     @Consumes({MediaType.APPLICATION_JSON})
     public void updateOrganizationAddress(@PathParam("organizationId") String organizationId, @PathParam("index") Integer index,
-                                          @RequestBody Address organization) {
+                                          @RequestBody Location organization) {
         memberService.updateOrganizationAddress(organizationId, index, organization);
     }
 
-    @Path("/organizations/{organizationId}")
+    @Path("/{organizationId}")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     public Organization getOrganization(@PathParam("organizationId") String id) {
@@ -103,11 +109,45 @@ public class MemberResource {
     }
 
     @DELETE
-    @Path("/organizations/{organizationId}")
+    @Path("/{organizationId}")
     @RolesAllowed({"admin"})
     @Produces({MediaType.TEXT_PLAIN})
     public void deleteOrganization(@PathParam("organizationId") String id) {
         memberService.deleteOrganization(id);
     }
     
+    /*@GET
+    @Path("/")
+    @Produces({MediaType.APPLICATION_JSON})
+    public List<Organization> getPartners() {
+        return organizationService.getPartners();
+    }*/
+    
+    @POST
+    @Path("/{organizationId}/tags")
+    @RolesAllowed({"admin"})
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.TEXT_PLAIN})
+    public void addTags(@PathParam("organizationId") String organizationId, @RequestBody List<Tag> tags) {
+        organizationService.addTags(organizationId, tags);
+    }
+
+    @PUT
+    @Path("/{organizationId}/tags")
+    @RolesAllowed({"admin"})
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.TEXT_PLAIN})
+    public void setTags(@PathParam("organizationId") String organizationId, @RequestBody List<Tag> tags) {
+        organizationService.setUserTags(organizationId, tags);
+    }
+
+    @DELETE
+    @Path("/{partnerId}/tags/{tagId}")
+    @RolesAllowed({"admin"})
+    @Consumes({MediaType.TEXT_PLAIN})
+    @Produces({MediaType.TEXT_PLAIN})
+    public void deleteTag(@PathParam("partnerId") String partnerId, @PathParam("tagId") String tagId) {
+        organizationService.deleteTag(partnerId, tagId);
+    }   
+
 }

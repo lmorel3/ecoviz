@@ -12,13 +12,10 @@ package org.ecoviz.services;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import com.vividsolutions.jts.util.Assert;
 
-import org.ecoviz.domain.Address;
+import org.ecoviz.domain.Location;
 import org.ecoviz.domain.Organization;
 import org.ecoviz.domain.Tag;
 import org.junit.jupiter.api.Test;
@@ -40,7 +37,8 @@ public class MemberServiceTest {
         Assert.equals("partner-id", merged.getId());
 
         Assert.equals(2, merged.getLocations().size());
-        Assert.equals(-2L, merged.getLocations().get(0).getOsmCityId());
+        Assert.equals(-2.0, merged.getLocations().get(0).getLatitude());
+        Assert.equals(-2.1, merged.getLocations().get(0).getLongitude());
 
         Assert.equals(3, merged.getTagsByPrefix("ecoviz:tag").size());
         Assert.equals("FR", merged.getTagValueByPrefixOrDefault("ecoviz:country", ""));
@@ -62,7 +60,8 @@ public class MemberServiceTest {
         Assert.equals(1, partner.getTagsByPrefix("ecoviz:project").size());
         Assert.equals(3, partner.getTagsByPrefix("ecoviz:tag").size());        
         Assert.equals("FR", partner.getTagValueByPrefixOrDefault("ecoviz:country", ""));
-        Assert.equals(-2L, partner.getLocations().get(0).getOsmCityId());
+        Assert.equals(-2.0, partner.getLocations().get(0).getLatitude());
+        Assert.equals(-2.1, partner.getLocations().get(0).getLongitude());
 
         Assert.equals("Member name", member.getName());
         Assert.isTrue(member.getId().length() > 0);
@@ -71,7 +70,8 @@ public class MemberServiceTest {
         Assert.equals(0, member.getTagsByPrefix("ecoviz:project").size());
         Assert.equals(0, member.getTagsByPrefix("ecoviz:tag").size());
         Assert.equals(0, member.getTagsByPrefix("ecoviz:country").size());
-        Assert.equals(-1L, member.getLocations().get(0).getOsmCityId());
+        Assert.equals(-1.0, member.getLocations().get(0).getLatitude());
+        Assert.equals(-1.1, member.getLocations().get(0).getLongitude());
     }
 
     @Test
@@ -96,8 +96,9 @@ public class MemberServiceTest {
         Tag t3 = Tag.make("ecoviz:tag", "Tag B");
         member.setTags(Arrays.asList(t1, t2, t3));
 
-        Address location = new Address();
-        location.setOsmCityId(-1L);
+        Location location = new Location();
+        location.setLatitude(-1.0);
+        location.setLongitude(-1.1);
         member.addLocation(location);
 
         return member;
@@ -116,8 +117,9 @@ public class MemberServiceTest {
         Tag t5 = Tag.make("ecoviz:project", "Project A");
         partner.setTags(Arrays.asList(t1, t2, t3, t4, t5));
 
-        Address location = new Address();
-        location.setOsmCityId(-2L);
+        Location location = new Location();
+        location.setLatitude(-2.0);
+        location.setLongitude(-2.1);
         partner.addLocation(location);
 
         return partner;
