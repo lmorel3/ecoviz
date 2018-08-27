@@ -12,7 +12,6 @@ package org.ecoviz.rest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-import javax.annotation.security.DeclareRoles;
 import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;

@@ -11,6 +11,7 @@ package org.ecoviz.rest;
 
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -31,6 +32,7 @@ public class DataResource {
     
     @Path("/children/{parentId}")
     @GET
+    @RolesAllowed({"user", "admin"})
     @Produces({MediaType.APPLICATION_JSON})
     public List<TreeData> getChildren(@PathParam("parentId")  String parentId) {
         System.out.println("Retrieving children of " + parentId);
