@@ -54,6 +54,7 @@ public class OrganizationResource {
 
     @GET
     @Path("/")
+    @RolesAllowed({"user"})
     @Produces({MediaType.APPLICATION_JSON})
     public List<Organization> findOrganizations() {
         return memberService.findOrganizations();
@@ -103,6 +104,7 @@ public class OrganizationResource {
 
     @Path("/{organizationId}")
     @GET
+    @RolesAllowed({"user", "admin"})
     @Produces({MediaType.APPLICATION_JSON})
     public Organization getOrganization(@PathParam("organizationId") String id) {
         return memberService.findOrganizationById(id);
@@ -115,13 +117,6 @@ public class OrganizationResource {
     public void deleteOrganization(@PathParam("organizationId") String id) {
         memberService.deleteOrganization(id);
     }
-    
-    /*@GET
-    @Path("/")
-    @Produces({MediaType.APPLICATION_JSON})
-    public List<Organization> getPartners() {
-        return organizationService.getPartners();
-    }*/
     
     @POST
     @Path("/{organizationId}/tags")

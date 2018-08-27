@@ -12,11 +12,12 @@ import { HomeComponent } from './components/home';
 import { MembersComponent } from './components/members';
 import { NoContentComponent } from './components/no-content';
 import { LoginComponent } from './components/login';
+import { LoginActivate } from './app.login.provider';
 
 export const ROUTES: Routes = [
-  { path: '',      component: HomeComponent },
-  { path: 'members', component: MembersComponent },
+  { path: '',      component: HomeComponent, canActivate:[LoginActivate] },
+  { path: 'members', component: MembersComponent, canActivate:[LoginActivate] },
   { path: 'login', component: LoginComponent },
-  { path: 'settings', loadChildren: '../app/modules/settings#SettingsModule' },
+  { path: 'settings', loadChildren: '../app/modules/settings#SettingsModule', canActivate:[LoginActivate] },
   { path: '**',    component: NoContentComponent },
 ];

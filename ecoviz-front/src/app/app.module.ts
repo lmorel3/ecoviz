@@ -55,6 +55,7 @@ import { AuthInterceptor } from './interceptors';
 import '../styles/styles.scss';
 import '../styles/headings.css';
 import { defaultSimpleModalOptions } from 'ngx-simple-modal/dist/simple-modal/simple-modal-options';
+import { LoginActivate } from './app.login.provider';
 
 // Application wide providers
 const APP_PROVIDERS = [
@@ -133,6 +134,7 @@ interface StoreType {
     TagService,
     UserService,
     AuthService,
+    LoginActivate,
     {
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptor,

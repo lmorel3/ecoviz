@@ -11,6 +11,7 @@ package org.ecoviz.rest;
 
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -31,6 +32,7 @@ public class TagResource {
     
     @Path("/")
     @GET
+    @RolesAllowed({"user", "admin"})
     @Produces({MediaType.APPLICATION_JSON})
     public List<Tag> getTags() {
         return tagService.getTags();
@@ -38,6 +40,7 @@ public class TagResource {
 
     @Path("/{prefix}")
     @GET
+    @RolesAllowed({"user", "admin"})
     @Produces({MediaType.APPLICATION_JSON})
     public List<Tag> getTagsByPrefix(@PathParam("prefix") String prefix) {
         return tagService.getTagsByPrefix(prefix);
