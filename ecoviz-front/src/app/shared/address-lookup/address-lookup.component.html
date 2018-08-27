@@ -16,8 +16,8 @@ SPDX-License-Identifier: EPL-2.0
 </ng-select>
 
 <pre *ngIf="!!selected && !!selected.address">
-    <em>OSM_ID</em>: {{ selected.osm_id }} ({{ selected.lon }}, {{ selected.lat }}) <br/>
     {{ selected.address.road }} <br/>
     {{ selected.address.postcode }} {{ selected.address.city ? selected.address.city : selected.address.town }} <br/>
-    {{ selected.address.country }} [{{ selected.address.country_code.toUpperCase() }}]
+    {{ selected.address.country }}<br/>
+    <em>{{ selected.lon }}, {{ selected.lat }})</em>
 </pre>

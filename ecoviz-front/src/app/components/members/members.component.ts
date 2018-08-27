@@ -17,8 +17,8 @@ import { icon, latLng, marker, point, polyline, tileLayer, MarkerClusterGroup, M
 import 'leaflet.markercluster';
 import 'leaflet-sidebar-v2'
 
-import { MemberService } from '../../services/member-service';
-import { Member, EMemberType } from '../../models/member';
+import { OrganizationService } from '../../services/organization-service';
+import { EMemberType } from '../../models/organization';
 import L from 'leaflet';
 
 import { FormGroup, FormBuilder } from '@angular/forms';
@@ -31,6 +31,7 @@ import { NgSelectComponent } from '@ng-select/ng-select';
 import { Tag } from '../../models/tag.model';
 import { TagService } from '../../services/tag-service';
 import { TagsModalComponent } from '../../shared/tags-modal';
+import { Organization } from '../../models/organization';
 
 
 @Component({
@@ -61,7 +62,7 @@ export class MembersComponent implements OnInit {
     private toggledItems: string[] = ['partners', 'members', 'untagged'];
 
     myForm: FormGroup;
-    members: Member[] = [];
+    members: Organization[] = [];
     map: L.Map;
 
     selectedItem: any;
@@ -72,8 +73,7 @@ export class MembersComponent implements OnInit {
     * TypeScript public modifiers
     */
     constructor(
-        private memberService: MemberService,
-        private partnerService: PartnerService,
+        private memberService: OrganizationService,
         private formBuilder: FormBuilder,
         private simpleModalService: SimpleModalService,
         private tagService: TagService,
@@ -126,7 +126,7 @@ export class MembersComponent implements OnInit {
 
     }
 
-    onSearch(member: Member) {
+    onSearch(member: Organization) {
         this.selectedItem = member;
         
         if(!!member && member.locations.length > 0) {
@@ -150,14 +150,14 @@ export class MembersComponent implements OnInit {
          *    - Remove partners linked to a member
          *    - Set specific type 'ORGANIZATION_PARTNER' for members linked to a partner
          **/
-        this.memberService.getMembers().then((members: Member[]) => {
+        this.memberService.getOrganizations().then((members: Organization[]) => {
             this.members = members;
             this.displayIcons(this.members, clusterGroup);
         });
         
     }
     
-    private displayIcons(members: Member[], clusterGroup: MarkerClusterGroup) {
+    private displayIcons(members: Organization[], clusterGroup: MarkerClusterGroup) {
         this.clusterGroup.clearLayers();
         let icons = this.getIcons();
 
@@ -330,7 +330,7 @@ export class MembersComponent implements OnInit {
         return this.toggledItems.indexOf(item) > -1; 
     }
 
-    shouldDisplayIcon(member: Member) {
+    shouldDisplayIcon(member: Organization) {
     
         if(member.isOrganization() && !this.isVisible('members')) {
             return false;

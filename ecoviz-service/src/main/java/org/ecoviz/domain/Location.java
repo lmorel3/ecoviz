@@ -15,14 +15,13 @@ import org.jnosql.artemis.Column;
 import org.jnosql.artemis.Entity;
 
 @Entity
-public class Address {
+public class Location {
 
-    public final static Address DEFAULT_LOCATION;
+    public final static Location DEFAULT_LOCATION;
 
     static {
-        DEFAULT_LOCATION = new Address();
-        DEFAULT_LOCATION.setCityName("");
-        DEFAULT_LOCATION.setOsmCityId(-1L);
+        DEFAULT_LOCATION = new Location();
+        DEFAULT_LOCATION.setCity("");
         DEFAULT_LOCATION.setStreet("");
         DEFAULT_LOCATION.setZipCode("");
         DEFAULT_LOCATION.setLatitude(39.292);
@@ -33,10 +32,7 @@ public class Address {
     private String street;
     
     @Column
-    private Long osmCityId;
-    
-    @Column
-    private String cityName;
+    private String city;
     
     @Column
     private String zipCode;
@@ -58,12 +54,8 @@ public class Address {
         return street;
     }
     
-    public void setOsmCityId(Long id) {
-        this.osmCityId = id;
-    }
-    
-    public void setCityName(String name) {
-        this.cityName = name;
+    public void setCity(String name) {
+        this.city = name;
     }
 
     public void setZipCode(String zipCode) {
@@ -81,13 +73,9 @@ public class Address {
     public void setLongitude(Double longitude) {
         this.longitude = longitude;
     }
-    
-    public Long getOsmCityId() {
-        return osmCityId;
-    }
-    
-    public String getCityName() {
-        return cityName;
+
+    public String getCity() {
+        return city;
     }
     
     public String getZipCode() {
@@ -106,18 +94,37 @@ public class Address {
         return latitude;
     }
     
-    public static Address fromDto(AddressDto addressDto, CityDto cityDto) {
-        Address address = new Address();
+    public static Location fromDto(AddressDto addressDto, CityDto cityDto) {
+        Location address = new Location();
         
         address.setStreet(addressDto.getStreet());
         
-        address.setOsmCityId(cityDto.getOsmId());
-        address.setCityName(cityDto.getName());
+        address.setCity(cityDto.getName());
         address.setCountry(cityDto.getCountry());
         address.setZipCode(cityDto.getZipCode());
         
         address.setLatitude(cityDto.getLatitude());
         address.setLongitude(cityDto.getLongitude());
+        
+        return address;
+    }
+
+    public static Location fromDto(AddressDto addressDto) {
+        Location address = new Location();
+        
+        address.setStreet(addressDto.getStreet());
+        
+        address.setCity(addressDto.getCityName());
+        address.setCountry(addressDto.getCountry());
+        address.setZipCode(addressDto.getZipCode());
+        
+        try {
+            address.setLatitude(addressDto.getLatitude());
+            address.setLongitude(addressDto.getLongitude());
+        } catch(NumberFormatException e) {
+            address.setLatitude(null);
+            address.setLongitude(null);
+        }
         
         return address;
     }

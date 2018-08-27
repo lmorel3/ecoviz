@@ -32,7 +32,7 @@ public class Organization {
     private String description;
 
     @Column
-    private List<Address> locations = new ArrayList<>();
+    private List<Location> locations = new ArrayList<>();
     
     @Column
     private List<Tag> tags = new ArrayList<>();    
@@ -53,15 +53,15 @@ public class Organization {
         return name;
     }
     
-    public List<Address> getLocations() {
+    public List<Location> getLocations() {
         return locations;
     }
     
-    public void setLocations(List<Address> locations) {
+    public void setLocations(List<Location> locations) {
         this.locations = locations;
     }
 
-    public void addLocation(Address location) {
+    public void addLocation(Location location) {
         this.locations.add(location);
     }
 
@@ -122,11 +122,11 @@ public class Organization {
         return "Organization #" + id + " : " + name + " has " + locations.size() + " locations";
     }
     
-    public static Organization fromDto(OrganizationDto dto, List<Address> address) {
+    public static Organization fromDto(OrganizationDto dto, List<Location> address) {
         Organization member = new Organization();
 
         if(address == null || address.size() == 0) {
-            member.addLocation(Address.DEFAULT_LOCATION);
+            member.addLocation(Location.DEFAULT_LOCATION);
         }
         
         member.setId(dto.getId());

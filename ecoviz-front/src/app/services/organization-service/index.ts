@@ -7,4 +7,4 @@
  * 
  * SPDX-License-Identifier: EPL-2.0
  ******************************************************************************/
-export * from './member.service';
+export * from './organization.service';

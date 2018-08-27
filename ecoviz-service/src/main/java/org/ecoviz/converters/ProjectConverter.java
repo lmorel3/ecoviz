@@ -23,7 +23,7 @@ import javax.inject.Inject;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
-import org.ecoviz.domain.Address;
+import org.ecoviz.domain.Location;
 import org.ecoviz.domain.Organization;
 import org.ecoviz.domain.Tag;
 import org.ecoviz.domain.dto.AddressDto;
@@ -131,10 +131,10 @@ public class ProjectConverter {
 
     public Organization createPartnerFromRecord(CSVRecord record) {
         Organization partner = new Organization();
-        Address location = null;
+        Location location = null;
 
-        String osmId = record.get(EProjectCsvField.OSM_ID);
-        if(!osmId.isEmpty()) {
+        boolean hasAddress = !record.get(EProjectCsvField.LATITUDE).isEmpty() && !record.get(EProjectCsvField.LONGITUDE).isEmpty();
+        if(hasAddress) {
             location = getAddressFromRecord(record);
         } else {
             location = createAddressFromRecord(record);
@@ -166,12 +166,12 @@ public class ProjectConverter {
     private List<String[]> createRecord(Organization organization) {
         List<String[]> lines = new LinkedList<>();
 
-        Address location = null;
+        Location location = null;
         boolean hasAddress = false;
 
         if(organization.getLocations().size() > 0) {
             location = organization.getLocations().get(0);
-            hasAddress = location.getOsmCityId() != null && location.getOsmCityId() > 0;    
+            hasAddress = location.getLatitude() != null && location.getLongitude() != null;    
         }
         
         for(Tag project : organization.getTagsByPrefix("ecoviz:project")) {
@@ -182,12 +182,11 @@ public class ProjectConverter {
                 organization.getTagValueByPrefixOrDefault("ecoviz:country", ""),
                 organization.getDescription(),
                 hasAddress ? location.getStreet() : "",
-                hasAddress ? location.getCityName() : "",
+                hasAddress ? location.getCity() : "",
                 hasAddress ? location.getZipCode() : "",
                 hasAddress ? location.getCountry() : "",
                 hasAddress ? String.valueOf(location.getLatitude()) : "",
                 hasAddress ? String.valueOf(location.getLongitude()) : "",
-                hasAddress ? String.valueOf(location.getOsmCityId()) : "",
                 organization.getTagsByPrefix("ecoviz:tag").stream().map(Tag::getName).collect(Collectors.joining(","))
             };
 
@@ -201,11 +200,11 @@ public class ProjectConverter {
      * In case of an address is provided, but osmId nor lat/lon,
      * it tries to find this place from Nominatim API 
      */
-    private Address createAddressFromRecord(CSVRecord record) {
-        Address address = null;
+    private Location createAddressFromRecord(CSVRecord record) {
+        Location address = null;
 
         if(record.get(EProjectCsvField.CITY).isEmpty() || record.get(EProjectCsvField.COUNTRY).isEmpty()) {
-            return Address.DEFAULT_LOCATION;
+            return Location.DEFAULT_LOCATION;
         }
 
         try {
@@ -214,25 +213,24 @@ public class ProjectConverter {
             
             CityDto city = nominatimHelper.searchCity(record.get(EProjectCsvField.CITY), record.get(EProjectCsvField.POSTCODE), record.get(EProjectCsvField.COUNTRY));
             
-            address = Address.fromDto(dto, city);
+            address = Location.fromDto(dto, city);
         } catch (RuntimeException e) {
             System.err.println("Location not found for " + record.get(EProjectCsvField.CITY));
-            address = Address.DEFAULT_LOCATION;
+            address = Location.DEFAULT_LOCATION;
         }
         
         return address;
     }
 
-    private Address getAddressFromRecord(CSVRecord record) {
-        Address location = new Address();
+    private Location getAddressFromRecord(CSVRecord record) {
+        Location location = new Location();
 
-        location.setCityName(record.get(EProjectCsvField.CITY));
+        location.setCity(record.get(EProjectCsvField.CITY));
         location.setCountry(record.get(EProjectCsvField.COUNTRY));
         location.setLatitude(Double.valueOf(record.get(EProjectCsvField.LATITUDE)));
         location.setLongitude(Double.valueOf(record.get(EProjectCsvField.LONGITUDE)));
         location.setStreet(record.get(EProjectCsvField.ADDRESS));
         location.setZipCode(record.get(EProjectCsvField.POSTCODE));
-        location.setOsmCityId(Long.valueOf(record.get(EProjectCsvField.OSM_ID)));
     
         return location;
     }

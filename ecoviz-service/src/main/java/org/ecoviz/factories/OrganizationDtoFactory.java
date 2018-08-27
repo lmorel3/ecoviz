@@ -24,9 +24,17 @@ public class OrganizationDtoFactory {
         addressDto.setCityName(record.get(2));
         addressDto.setZipCode(record.get(3));
         addressDto.setCountry(record.get(4));
+
+        try {
+            addressDto.setLatitude(Double.valueOf(record.get(5)));
+            addressDto.setLongitude(Double.valueOf(record.get(6)));
+        } catch (NumberFormatException e) {
+            addressDto.setLatitude(null);
+            addressDto.setLongitude(null);
+        }
         
         dto.setName(record.get(0));
-        dto.setMemberType(record.get(5));
+        dto.setMemberType(record.get(7));
         
         dto.addLocation(addressDto);
         

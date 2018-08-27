@@ -22,7 +22,6 @@ public enum EProjectCsvField {
     COUNTRY,
     LATITUDE,
     LONGITUDE,
-    OSM_ID,
     TAGS;
 
 }

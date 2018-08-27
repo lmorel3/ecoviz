@@ -11,13 +11,13 @@ SPDX-License-Identifier: EPL-2.0
 
     <h3 class="title is-3">Import organizations</h3>
 
-    <div class="pageloader is-active is-right-to-left" *ngIf="isImportingOrganizations"><span class="title">Since the importation is asynchronous, it can takes a couple of minutes before seeing an up-to-date map!</span></div>
+    <div class="pageloader is-active is-right-to-left" *ngIf="isImportingOrganizations"><span class="title">Processing data...</span></div>
 
     <form [formGroup]="dataForm" (ngSubmit)="importOrganizations()">
 
         <p [hidden]="!badData">Bad data. First line should be:<br> {{ membersCsvFirstLine }}</p>
 
-        <p>Since the importation is asynchronous, it can takes a couple of minutes before seeing an up-to-date map.</p>
+        <p>If geodata is not provided, we try to find them via the address. Perhaps, if we can't, we set a default location in the middle of the ocean.</p>
 
         <div class="field">
             <textarea [placeholder]="membersCsvFirstLine" formControlName="csvData" class="textarea" rows="10"></textarea>

@@ -15,7 +15,7 @@ export enum EMemberType {
     ORGANIZATION_PARTNER // Both member & project partner
 }
 
-export class Member {
+export class Organization {
     
     id: String;
     name: String;
@@ -38,14 +38,14 @@ export class Member {
         return this.tags.filter((t) => t.id.startsWith('ecoviz:tag'));
     }
     
-    static fromApi(data: any): Member{
-        let member = new Member();
+    static fromApi(data: any): Organization{
+        let member = new Organization();
         
         member.id        = data.id;
         member.name      = data.name;
         member.locations = data.locations;
         
-        member.type      = Member.getType(data.tags);
+        member.type      = Organization.getType(data.tags);
         member.tags      = data.tags;
 
         return member;

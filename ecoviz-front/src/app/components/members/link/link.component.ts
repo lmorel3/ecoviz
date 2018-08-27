@@ -10,19 +10,10 @@
 import { Component, OnInit } from '@angular/core';
 import { SimpleModalComponent } from "ngx-simple-modal";
 
-import { Observable } from 'rxjs/Observable';
-import { of } from 'rxjs';
-import { filter } from 'rxjs/operators';
+import { Organization } from '../../../models/organization';
+import { OrganizationService } from '../../../services/organization-service';
 
-import { Tag } from '../../../models/tag.model';
-import { TagModel } from 'ngx-chips/core/accessor';
-import { DataService } from '../../../services/data-service';
-import { TreeData } from '../../../models/tree-data.model';
-import { PartnerService } from '../../../services/partner-service';
-import { TagService } from '../../../services/tag-service';
-import { Partner } from '../../../models/partner.model';
-
-export interface PartnerModel {
+export interface OrganizationModel {
     id: string;
     name: string;
 }
@@ -30,20 +21,17 @@ export interface PartnerModel {
     selector: 'confirm',
     templateUrl: './link.component.html'
 })
-export class LinkComponent extends SimpleModalComponent<PartnerModel, Partner> implements PartnerModel, OnInit {
+export class LinkComponent extends SimpleModalComponent<OrganizationModel, Organization> implements OrganizationModel, OnInit {
     
     id: string;
     name: string;
 
-    availablePartners: Partner[] = [];
+    availablePartners: Organization[] = [];
 
-    selectedPartner: Partner;
+    selectedPartner: Organization;
 
     constructor(
-        private dataService: DataService,
-        private partnerService: PartnerService,
-        private tagService: TagService
-    ) {
+        private partnerService: OrganizationService    ) {
         super();
     }
 
@@ -70,7 +58,7 @@ export class LinkComponent extends SimpleModalComponent<PartnerModel, Partner> i
      * Load available tags 
      */
     loadAvailablePartners(): void {
-        this.partnerService.getPartners().subscribe((partners: Partner[]) => this.availablePartners = partners);
+        this.partnerService.getPartners().subscribe((partners: Organization[]) => this.availablePartners = partners);
     };
 
 }
