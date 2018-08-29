@@ -15,10 +15,6 @@ import { environment } from 'environments/environment';
 import { saveAs } from 'file-saver';
 import { map } from 'rxjs/operators';
 
-/*const httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};*/
-
 @Injectable()
 export class ProjectService {
 
@@ -30,8 +26,8 @@ export class ProjectService {
         return this.http.get(environment.apiUrl + '/api/projects');
     }
     
-    updateProjects() {
-        return this.http.get(environment.apiUrl + '/api/projects/update');
+    getImportProgress(id: string) {
+        return this.http.get(environment.apiUrl + '/api/projects/import/' + id + '/progress');
     }
 
     importProjects(csv: string) {

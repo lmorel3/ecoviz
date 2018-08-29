@@ -10,17 +10,24 @@
 package org.ecoviz.converters;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.ecoviz.domain.Location;
@@ -85,8 +92,14 @@ public class ProjectConverter {
 
     /**
      * Creates a list of Project, with their Partner (+ Address and Tag), from CSV data
+     * @throws IOException
      */
-    public List<Organization> createFromRecords(Iterable<CSVRecord> records) {
+    public List<Organization> createFromRecords(CSVParser parser, String importId, Map<String, Integer> progressMap) throws IOException {
+        System.out.println("Creating organizations from record");
+
+        List<CSVRecord> recordsList = parser.getRecords();
+        int size = recordsList.size();
+        System.out.println(size + " records to process");
         
         // Used to know if a line with this project has already been processed
         Map<String, Tag> projects = new ConcurrentHashMap<>();
@@ -94,7 +107,8 @@ public class ProjectConverter {
         // Same thing, but for partners
         Map<String, Organization> partners = new ConcurrentHashMap<>();
 
-        for (CSVRecord record : records) {
+        int i = 1;
+        for (CSVRecord record : recordsList) {
             String projectName = record.get(EProjectCsvField.PROJECT);
             String partnerName = record.get(EProjectCsvField.NAME);
 
@@ -106,12 +120,15 @@ public class ProjectConverter {
             partner.addTag(project);
 
             // Append tags
-            List<Tag> userTags = createTagsFromStr(record.get(EProjectCsvField.TAGS));
-            System.out.println("Tags: " + userTags.size()  + " > " + userTags);
-            partner.addTags(userTags);
+            Set<Tag> userTags = new HashSet<>(partner.getTagsByPrefix("ecoviz:tag"));
+            userTags.addAll(createTagsFromStr(record.get(EProjectCsvField.TAGS)));
+            partner.setUserTags(new ArrayList<>(userTags));
             
             projects.put(projectName, project);
             partners.put(partnerName, partner);
+
+            progressMap.put(importId, ((int) i * 100 / size));
+            i++;
         }
 
         return new LinkedList<>(partners.values());
