@@ -11,23 +11,19 @@ package org.ecoviz.repositories;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
 
 import org.ecoviz.domain.Organization;
 import org.ecoviz.domain.Tag;
 import org.jnosql.artemis.Database;
 import org.jnosql.artemis.DatabaseType;
-import org.jnosql.artemis.Repository;
 import org.jnosql.artemis.document.DocumentTemplate;
 import org.jnosql.artemis.document.query.DocumentQueryMapperBuilder;
 import org.jnosql.diana.api.document.DocumentQuery;
-
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
 
 
 @ApplicationScoped

@@ -10,13 +10,10 @@
 package org.ecoviz.domain;
 
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.vividsolutions.jts.util.Assert;
 
-import org.ecoviz.domain.Tag;
 import org.junit.jupiter.api.Test;
 
 public class OrganizationTest {

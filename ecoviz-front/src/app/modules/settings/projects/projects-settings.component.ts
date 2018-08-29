@@ -31,6 +31,7 @@ export class ProjectsSettingsComponent implements OnInit {
 
     private badData = false;
     private isUpdatingProjects = false;
+    private progress: number = 0;
 
     projectsCsvFirstLine = 'PROJECT,MEMBERSHIP,NAME,COUNTRY_CODE,ROLE,ADDRESS,CITY,POSTCODE,COUNTRY,LATITUDE,LONGITUDE,TAGS';    
 
@@ -55,10 +56,25 @@ export class ProjectsSettingsComponent implements OnInit {
         if(!csvData.startsWith(this.projectsCsvFirstLine)) {
             this.badData = true;
         } else {
-            this.isUpdatingProjects = true
-            this.projectService.importProjects(csvData).subscribe(() => { this.isUpdatingProjects = false });
+            this.isUpdatingProjects = true;
+            this.projectService.importProjects(csvData).subscribe((resp: any) => this.getProgress(resp.value) );
             this.badData = false;
         }
+    }
+
+    getProgress(id: string) {
+        let that = this;
+        this.projectService.getImportProgress(id).subscribe((resp: any) => {
+            let progress = resp.value
+
+            if(progress >= 0 && progress < 100) {
+                that.progress = progress;
+                setTimeout(() => { that.getProgress(id) }, 5);
+            } else {
+                that.isUpdatingProjects = false;
+                that.progress = 0;
+            }
+        })
     }
     
     exportProjects() {

@@ -9,18 +9,10 @@
  ******************************************************************************/
 package org.ecoviz.converters;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import com.vividsolutions.jts.util.Assert;
 
-import org.ecoviz.domain.Location;
 import org.ecoviz.domain.Tag;
 import org.ecoviz.helpers.NominatimHelper;
 import org.junit.jupiter.api.Test;

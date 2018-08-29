@@ -28,6 +28,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.eclipse.microprofile.openapi.annotations.parameters.RequestBody;
+import org.ecoviz.domain.dto.ValueDto;
 import org.ecoviz.services.ProjectService;
 
 @Path("/projects")
@@ -41,8 +42,17 @@ public class ProjectResource {
     @Path("/import")
     @RolesAllowed({"admin"})
     @Consumes({MediaType.TEXT_PLAIN})
-    public void importFromCsv(@RequestBody InputStream csv) throws IOException, GeneralSecurityException {
-        projectService.importFromCsv(csv);
+    @Produces({MediaType.APPLICATION_JSON})
+    public ValueDto importFromCsv(@RequestBody InputStream csvLine) throws IOException, GeneralSecurityException {
+        return projectService.importFromCsv(csvLine);
+    }
+    
+    @GET
+    @Path("/import/{id}/progress")
+    @RolesAllowed({"admin"})
+    @Produces({MediaType.APPLICATION_JSON})
+    public ValueDto getProgress(@PathParam("id") String id) {
+        return projectService.getImportProgress(id);
     }
     
     @GET
@@ -55,7 +65,7 @@ public class ProjectResource {
         return new StreamingOutput() {
 			@Override
 			public void write(OutputStream output) throws IOException, WebApplicationException {
-				output.write(result.getBytes());
+				output.write(result.getBytes("UTF-8"));
 			}
         };
     }
