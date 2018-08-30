@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -52,9 +53,8 @@ public class ProjectService {
      * - Otherwise, it's incremented until 100 
      * @throws IOException
      */
-    public ValueDto importFromCsv(InputStream file) throws IOException {
+    public ValueDto importFromCsv(String csv) throws IOException {
         String id = RandomHelper.uuid();
-        CSVParser parser = ProjectConverter.CSV_FORMAT_READ.parse(new InputStreamReader(file, "UTF-8"));
         progressMap.put(id, 0);
 
         Thread thread = new Thread(new Runnable(){
@@ -66,7 +66,7 @@ public class ProjectService {
         
                 // Import data
                 try {
-                    partners = converter.createFromRecords(parser, id, progressMap);        
+                    partners = converter.createFromRecords(csv, id, progressMap);        
                 } catch (IOException e) {
                     progressMap.put(id, -1);
         

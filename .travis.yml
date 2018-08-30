@@ -12,7 +12,7 @@ matrix:
       after_success:
         - # Triggers redeployment
         - echo "Triggering webhook"
-        - "curl -X POST \"$HOOK_URL\" -H \"X-Hook-Token:$HOOK_TOKEN\" -H \"Content-Type:application/json\" -d '{\"name\":\"ecoviz-service\",\"url\":\"\"}\"'"
+        - "curl -X POST \"$HOOK_URL\" -H \"X-Hook-Token:$HOOK_TOKEN\" -H \"Content-Type:application/json\" -d '{\"name\":\"ecoviz-service\"}\"'"
 
       branches:
         only:
@@ -30,8 +30,9 @@ matrix:
       after_success:
         - # Trigger redeployment 
         - echo "Triggering ecoviz-front"
-        - zip dist.zip dist
-        - "curl -X POST \"$HOOK_URL\" -H \"X-Hook-Token:$HOOK_TOKEN\" -H \"Content-Type:application/json\" -d '{\"name\":\"ecoviz-front\",\"url\":\"$(curl --upload-file dist.zip https://transfer.sh/dist.zip)\"}\"'"
+        - zip -r dist.zip dist
+        - FILE_URL=$(curl --upload-file dist.zip https://transfer.sh/dist.zip) 
+        - "curl -X POST \"$HOOK_URL\" -H \"X-Hook-Token:$HOOK_TOKEN\" -H \"Content-Type:application/json\" -d '{\"name\":\"ecoviz-front\",\"url\":\"'$FILE_URL'\"}\"'"
       
       branches:
         only:

@@ -43,8 +43,8 @@ public class ProjectResource {
     @RolesAllowed({"admin"})
     @Consumes({MediaType.TEXT_PLAIN})
     @Produces({MediaType.APPLICATION_JSON})
-    public ValueDto importFromCsv(@RequestBody InputStream csvLine) throws IOException, GeneralSecurityException {
-        return projectService.importFromCsv(csvLine);
+    public ValueDto importFromCsv(@RequestBody String csv) throws IOException, GeneralSecurityException {
+        return projectService.importFromCsv(csv);
     }
     
     @GET

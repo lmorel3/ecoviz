@@ -12,6 +12,7 @@ package org.ecoviz.converters;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
+import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -94,9 +95,10 @@ public class ProjectConverter {
      * Creates a list of Project, with their Partner (+ Address and Tag), from CSV data
      * @throws IOException
      */
-    public List<Organization> createFromRecords(CSVParser parser, String importId, Map<String, Integer> progressMap) throws IOException {
+    public List<Organization> createFromRecords(String csvData, String importId, Map<String, Integer> progressMap) throws IOException {
         System.out.println("Creating organizations from record");
 
+        CSVParser parser = ProjectConverter.CSV_FORMAT_READ.parse(new StringReader(csvData));
         List<CSVRecord> recordsList = parser.getRecords();
         int size = recordsList.size();
         System.out.println(size + " records to process");
