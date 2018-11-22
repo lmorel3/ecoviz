@@ -83,7 +83,7 @@
     "@angular/router": "^6.1.3",
     "@asymmetrik/ngx-leaflet": "^4.0.0",
     "@asymmetrik/ngx-leaflet-markercluster": "^1.0.0",
-    "@atago0129/d3-v4-contextmenu": "git://github.com/atago0129/d3-v4-contextmenu.git",
+    "@atago0129/d3-v4-contextmenu": "1.2.0",
     "@auth0/angular-jwt": "^2.0.0",
     "@ng-select/ng-select": "^2.4.1",
     "@types/leaflet": "^1.2.9",
