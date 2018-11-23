@@ -6,7 +6,7 @@ matrix:
       script:
         - echo "Building ecoviz-service"
 
-        #- sed -i.bak -E "s/(mongodb-server-host-1:)(.*)$/\1 $MONGO_HOST/g" src/main/resources/META-INF/jnosql.yaml 
+        #- sed -i.bak -E "s/(mongodb-server-host-1:)(.*)$/\1 $MONGO_HOST/g" src/main/resources/META-INF/jnosql.yaml
         - mvn -B clean install
 
       after_success:
@@ -24,16 +24,16 @@ matrix:
       script:
         - echo "Building ecoviz-front"
 
-        - yarn install
-        - yarn run build:prod
-        
+        - npm install
+        - npm run build:prod
+
       after_success:
-        - # Trigger redeployment 
+        - # Trigger redeployment
         - echo "Triggering ecoviz-front"
         - zip -r dist.zip dist
-        - FILE_URL=$(curl --upload-file dist.zip https://transfer.sh/dist.zip) 
+        - FILE_URL=$(curl --upload-file dist.zip https://transfer.sh/dist.zip)
         - "curl -X POST \"$HOOK_URL\" -H \"X-Hook-Token:$HOOK_TOKEN\" -H \"Content-Type:application/json\" -d '{\"name\":\"ecoviz-front\",\"url\":\"'$FILE_URL'\"}\"'"
-      
+
       branches:
         only:
           - master
