@@ -6,9 +6,9 @@ matrix:
 
       addons:
         sonarcloud:
-          organization: "jonathanfievet_ecoviz" # the key of the org you chose at step #3
+          organization: "jonathanfievet-github" # the key of the org you chose at step #3
           token:
-            secure: ********* # encrypted value of your token
+            secure: "df11dc103e89d8c95dbefd70400a01de7baa80cf" # encrypted value of your token
 
       script:
         - echo "Building ecoviz-service"
