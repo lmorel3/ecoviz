@@ -20,12 +20,13 @@ matrix:
 
     - language: javascript
       before_script:
+        - npm install -g yarn
         - cd ecoviz-front
       script:
         - echo "Building ecoviz-front"
 
-        - npm install
-        - npm run build:prod
+        - yarn install
+        - yarn run build:prod
 
       after_success:
         - # Trigger redeployment
