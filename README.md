@@ -50,7 +50,7 @@ Initialy, we have the following branches :
 
 - Travis : https://travis-ci.org/jonathanfievet/ecoviz
 - SonarQube : https://sonarcloud.io/organizations/jonathanfievet-github/projects
-
+- Waffle : https://waffle.io/jonathanfievet/ecoviz
 
 ## Project overview
 
