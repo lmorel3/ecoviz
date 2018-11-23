@@ -11,26 +11,24 @@ package org.ecoviz.domain;
 
 import java.util.Arrays;
 import java.util.List;
-
-import com.vividsolutions.jts.util.Assert;
-
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class OrganizationTest {
 
     @Test
-    void testGetTagsByPrefix() {
+    public void testGetTagsByPrefix() {
+
         Organization o = new Organization();
         o.setTags(createFakeTags());
 
-        Assert.equals(2, o.getTagsByPrefix("ecoviz:tag").size());
-        Assert.equals(4, o.getTagsByPrefix("").size());
+        assertEquals(2, o.getTagsByPrefix("ecoviz:tag").size());
+        assertEquals(4, o.getTagsByPrefix("").size());
     }
 
     @Test
-    void testSetUserTags() {
+    public void testSetUserTags() {
         //fail("Test CI");
 
         Organization o = new Organization();
@@ -40,8 +38,8 @@ public class OrganizationTest {
         Tag t2 = new Tag("ecoviz:tag:other", "Other");
         o.setUserTags(Arrays.asList(t1, t2));
 
-        Assert.equals(2, o.getTagsByPrefix("ecoviz:tag").size());
-        Assert.equals(4, o.getTags().size());
+        assertEquals(2, o.getTagsByPrefix("ecoviz:tag").size());
+        assertEquals(4, o.getTags().size());
     }
 
     private List<Tag> createFakeTags() {

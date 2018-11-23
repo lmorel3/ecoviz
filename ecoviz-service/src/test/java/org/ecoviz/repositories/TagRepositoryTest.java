@@ -12,19 +12,18 @@ package org.ecoviz.repositories;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import com.vividsolutions.jts.util.Assert;
-
 import org.ecoviz.domain.Organization;
 import org.ecoviz.domain.Tag;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TagRepositoryTest {
 
     TagRepository tagRepository = new TagRepository();
 
     @Test
-    void testFilterByPrefix() {
+    public void testFilterByPrefix() {
         Organization o1 = new Organization();
         o1.setTags(createFakeTags());
 
@@ -33,10 +32,10 @@ public class TagRepositoryTest {
         o2.addTag(new Tag("ecoviz:tag:hello", "Hello"));
 
         List<Tag> tags = tagRepository.filterByPrefix("ecoviz:tag", Arrays.asList(o1, o2));
-        Assert.equals(3, tags.size());
+        assertEquals(3, tags.size());
 
         List<Tag> tags2 = tagRepository.filterByPrefix("ecoviz:project",  Arrays.asList(o1, o2));
-        Assert.equals(1, tags2.size());
+        assertEquals(1, tags2.size());
     }
 
     private List<Tag> createFakeTags() {

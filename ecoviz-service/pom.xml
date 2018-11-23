@@ -22,7 +22,7 @@
         <apache.csv.version>1.5</apache.csv.version>
         <nimbus.jose-jwt.version>5.14</nimbus.jose-jwt.version>
         <mockito.version>2.21.0</mockito.version>
-        <junit.jupiter.version>5.2.0</junit.jupiter.version>
+        <junit.jupiter.version>5.3.1</junit.jupiter.version>
     </properties>
     
     <dependencies>
@@ -130,6 +130,7 @@
 			<version>${junit.jupiter.version}</version>
 			<scope>test</scope>
 		</dependency>
+
 
     </dependencies>
     

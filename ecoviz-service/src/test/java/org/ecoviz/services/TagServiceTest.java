@@ -13,23 +13,22 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.vividsolutions.jts.util.Assert;
-
 import org.ecoviz.domain.Tag;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TagServiceTest {
 
     @Test
-    void testUnicity() {
+    public void testUnicity() {
 
         List<Tag> tags = Arrays.asList(new Tag("1", "Tag 1"), new Tag("2", "Tag 2"), new Tag("2", "Tag 2"));
 
         Set<Tag> everyTags = new HashSet<>();
         everyTags.addAll(tags);
 
-        Assert.equals(2, everyTags.size());
+        assertEquals(2, everyTags.size());
 
     }
 

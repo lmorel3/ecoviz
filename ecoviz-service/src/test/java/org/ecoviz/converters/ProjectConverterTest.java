@@ -10,12 +10,11 @@
 package org.ecoviz.converters;
 
 import java.util.List;
-
-import com.vividsolutions.jts.util.Assert;
-
 import org.ecoviz.domain.Tag;
 import org.ecoviz.helpers.NominatimHelper;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ProjectConverterTest {
 
@@ -35,9 +34,16 @@ public class ProjectConverterTest {
 
     @Test
     public void testCreateTagsFromStr() {
-        List<Tag> tags = converter.createTagsFromStr("Tag 1, Tag 2, Tag 3");
 
-        Assert.equals(3, tags.size());
+        List<Tag> tags = converter.createTagsFromStr("Tag 1, Tag 2, Tag 3");
+        assertEquals(3, tags.size());
+    }
+
+    @Test
+    public void testCreateTagsFromStr2() {
+
+        List<Tag> tags = converter.createTagsFromStr("Tag 1, Tag 2, Tag 3");
+        assertEquals(3, tags.size());
     }
     
 }
