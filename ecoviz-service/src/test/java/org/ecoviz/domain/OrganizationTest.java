@@ -16,6 +16,8 @@ import com.vividsolutions.jts.util.Assert;
 
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 public class OrganizationTest {
 
     @Test
@@ -29,6 +31,8 @@ public class OrganizationTest {
 
     @Test
     void testSetUserTags() {
+        fail("Test CI");
+
         Organization o = new Organization();
         o.setTags(createFakeTags());
 
