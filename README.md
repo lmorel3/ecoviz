@@ -46,6 +46,12 @@ Initialy, we have the following branches :
 - Done
 - Closed
 
+### 5. Tools
+
+- Travis : https://travis-ci.org/jonathanfievet/ecoviz
+- SonarQube : https://sonarcloud.io/organizations/jonathanfievet-github/projects
+
+
 ## Project overview
 
 The aim of **Ecoviz** is to facilitate the visualization of an _ecosystem_.
