@@ -3,11 +3,21 @@ matrix:
     - language: java
       before_script:
         - cd ecoviz-service
+
+      addons:
+        sonarcloud:
+          organization: "sonarcloud_organization_key" # the key of the org you chose at step #3
+          token:
+            secure: ********* # encrypted value of your token
+
       script:
         - echo "Building ecoviz-service"
 
         #- sed -i.bak -E "s/(mongodb-server-host-1:)(.*)$/\1 $MONGO_HOST/g" src/main/resources/META-INF/jnosql.yaml
-        - mvn -B clean install
+        #- sonar:sonar  -Dsonar.projectKey=jonathanfievet_ecoviz -Dsonar.organization=jonathanfievet-github  -Dsonar.host.url=https://sonarcloud.io -Dsonar.login=df11dc103e89d8c95dbefd70400a01de7baa80cf
+        #- mvn -B clean install
+        - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar
+
 
       after_success:
         - # Triggers redeployment

@@ -31,7 +31,7 @@ public class OrganizationTest {
 
     @Test
     void testSetUserTags() {
-        fail("Test CI");
+        //fail("Test CI");
 
         Organization o = new Organization();
         o.setTags(createFakeTags());
