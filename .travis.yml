@@ -20,6 +20,7 @@ matrix:
 
     - language: javascript
       before_script:
+        - nvm install 11
         - npm install -g yarn
         - cd ecoviz-front
       script:
