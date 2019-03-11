@@ -3,13 +3,14 @@
 import { ApplicationRef, NgModuleRef } from '@angular/core';
 import { enableDebugTools } from '@angular/platform-browser';
 import { Environment } from './model';
+import * as apiUrl from './apiUrl';
 
 Error.stackTraceLimit = Infinity;
 require('zone.js/dist/long-stack-trace-zone');
 
 export const environment: Environment = {
-  production: false,  
-  apiUrl: 'http://localhost:8083',
+  production: false,
+  apiUrl: apiUrl.url,
   showDevModule: true,
 
   /** Angular debug tools in the dev console
